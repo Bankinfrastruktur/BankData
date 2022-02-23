@@ -1,0 +1,51 @@
+#ClrStart|ClrEnd|IbanId|BIC|BankName|AccType|ChkType|IbanMethod|MinLen|Len
+1100|1199|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+1200|1399|120|DABASESX|Danske Bank|Type1|Comment1|Method1|7|7
+1400|2099|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+2300|2399|230|AABASESS|Ålandsbanken|Type1|Comment2|Method1|7|7
+2400|2499|120|DABASESX|Danske Bank|Type1|Comment1|Method1|7|7
+3000|3299|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+3300|3300|300|NDEASESS|Nordea|Type2|Comment1|MethodUnknown|7|10
+3301|3399|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+3400|3409|902|ELLFSESS|Länsförsäkringar Bank|Type1|Comment1|Method1|7|7
+3410|3781|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+3782|3782|300|NDEASESS|Nordea|Type2|Comment1|MethodUnknown|7|10
+3783|3999|300|NDEASESS|Nordea|Type1|Comment1|Method1|7|7
+4000|4999|300|NDEASESS|Nordea|Type1|Comment2|Method1|7|7
+5000|5999|500|ESSESESS|SEB|Type1|Comment1|Method1|7|7
+6000|6999|600|HANDSESS|Handelsbanken|Type2|Comment2|Method2|7|9
+7000|7999|800|SWEDSESS|Swedbank|Type1|Comment1|Method1|7|7
+8000|8999|800|SWEDSESS|Swedbank|Type2|Comment3|Method3|7|10
+9020|9029|902|ELLFSESS|Länsförsäkringar Bank|Type1|Comment2|Method1|7|7
+9040|9049|904|CITISESX|Citibank (filial)|Type1|Comment2|Method1|7|7
+9060|9069|902|ELLFSESS|Länsförsäkringar Bank|Type1|Comment1|Method1|7|7
+9100|9109|910|NNSESES1|Nordnet Bank|Type1|Comment2|Method1|7|7
+9120|9124|500|ESSESESS|SEB|Type1|Comment1|Method1|7|7
+9130|9149|500|ESSESESS|SEB|Type1|Comment1|Method1|7|7
+9150|9169|915|SKIASESS|Skandiabanken|Type1|Comment2|Method1|7|7
+9170|9179|917|IKANSE21|Ikanobanken|Type1|Comment1|Method1|7|7
+9180|9189|120|DABASESX|Danske Bank|Type2|Comment1|MethodUnknown|7|10
+9190|9199|919|DNBASESX|DnB Bank|Type1|Comment2|Method1|7|7
+9230|9239|923|MARGSESS|Marginalen Bank|Type1|Comment1|Method1|7|7
+9250|9259|925|SBAVSESS|SBAB Bank|Type1|Comment1|Method1|7|7
+9260|9269|919|DNBASESX|DnB Bank|Type1|Comment2|Method1|7|7
+9270|9279|927|IBCASES1|ICA Banken|Type1|Comment1|Method1|7|7
+9280|9289|928|RESUSE21|Resurs Bank|Type1|Comment1|Method1|7|7
+9300|9349|930|SWEDSESS|Swedbank|Type2|Comment1|Method1|7|10
+9390|9399|939|LAHYSESS|Landshypotek|Type1|Comment2|Method1|7|7
+9400|9449|940|FORXSES1|Forex Bank|Type1|Comment1|Method1|7|7
+9460|9469|946|BSNOSESS|Santander Consumer Bank|Type1|Comment1|Method1|7|7
+9470|9479|947|FTSBSESS|BNP Paribas|Type1|Comment2|Method1|7|7
+9500|9549|950|NDEASESS|Nordea (Plusgirot)|Type2|Comment3|MethodUnknown|7|10
+9550|9569|955|AVANSES1|Avanza Bank|Type1|Comment2|Method1|7|7
+9570|9579|957|SPSDSE23|Sparbanken Syd|Type2|Comment1|Method2|5|10
+9590|9599|959|ERPFSES2|Erik Penser Bank AB|Type1|Comment2|Method1|7|7
+9630|9639|963|LOSADKKK|Lån & Spar Bank A/S, filial|Type1|Comment1|Method1|7|7
+9640|9649|964|NOFBSESS|Nordax Bank|Type1|Comment2|Method1|7|7
+9660|9669|966|SVEASES1|Svea Bank|Type1|Comment2|Method1|7|7
+9670|9679|967|JAKMSE22|JAK Medlemsbank|Type1|Comment2|Method1|7|7
+9680|9689|968|BSTPSESS|Bluestep Finans AB|Type1|Comment1|Method1|7|7
+9700|9709|970|EKMLSE21|Ekobanken|Type1|Comment2|Method1|7|7
+9750|9759|975|NOHLSESS|Northmill Bank|Type1|Comment2|Method1|7|7
+9780|9789|978|KLRNSESS|Klarna Bank|Type1|Comment2|Method1|7|7
+9960|9969|950|NDEASESS|Nordea (Plusgirot)|Type2|Comment3|MethodUnknown|7|10
