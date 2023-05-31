@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swedishbankers.Bank.Data", "Swedishbankers.Bank.Data\Swedishbankers.Bank.Data.csproj", "{F17EEC58-7450-49F0-8598-7CE789E1CAA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E574ED9B-4F3F-4605-8BF9-01C8966AE989}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18E39B1D-B659-4BFB-AA6B-85BCDB6BCC55}
+	EndGlobalSection
+EndGlobal
