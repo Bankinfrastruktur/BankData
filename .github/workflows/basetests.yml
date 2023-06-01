@@ -1,0 +1,23 @@
+name: .NET
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ 7.0.x ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore NET || (ls -lha && exit 1)
+      - name: Build
+        run: dotnet build NET --configuration Release --no-restore  --verbosity normal || dotnet build NET --configuration Release --no-restore --verbosity detailed
+      - name: Test
+        run: dotnet test NET --no-restore --verbosity normal || (ls -lha && exit 1)
