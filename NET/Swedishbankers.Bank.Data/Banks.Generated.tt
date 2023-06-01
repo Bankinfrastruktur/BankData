@@ -1,0 +1,11 @@
+/* Hack to hide issue with .tt file being compiled as .cs <#="*" #>/
+<#@ template hostspecific="false" #>
+<#@ output extension=".cs" #>
+namespace Swedishbankers.Bank.Data;
+
+public static partial class Banks
+{
+    public static readonly string SourcePsv = @"
+<#@ include file="..\..\Data\Source.psv" #>";
+}
+//*/

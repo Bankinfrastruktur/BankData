@@ -1,0 +1,6 @@
+*.Generated.cs
+
+bin/
+obj/
+.vs
+*_NCrunch_*
