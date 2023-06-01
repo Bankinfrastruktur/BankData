@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swedishbankers.Bank.Tests", "Swedishbankers.Bank.Tests\Swedishbankers.Bank.Tests.csproj", "{FE05CFF0-B2F0-4372-B325-D6B72272AC09}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F17EEC58-7450-49F0-8598-7CE789E1CAA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE05CFF0-B2F0-4372-B325-D6B72272AC09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE05CFF0-B2F0-4372-B325-D6B72272AC09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE05CFF0-B2F0-4372-B325-D6B72272AC09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE05CFF0-B2F0-4372-B325-D6B72272AC09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
