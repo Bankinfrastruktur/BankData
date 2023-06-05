@@ -1,6 +1,6 @@
 using NUnit.Framework.Constraints;
 
-namespace Swedishbankers.Bank.Tests;
+namespace Bankinfrastruktur.Tests;
 
 internal static class Helpers
 {

@@ -1,4 +1,4 @@
-namespace Swedishbankers.Bank.Data;
+namespace Bankinfrastruktur.Data;
 
 /// <summary> How to generate IBAN
 /// https://web.archive.org/web/20230605132214/https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer

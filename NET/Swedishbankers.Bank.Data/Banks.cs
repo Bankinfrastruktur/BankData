@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Swedishbankers.Bank.Data;
+namespace Bankinfrastruktur.Data;
 
 public static partial class Banks
 {

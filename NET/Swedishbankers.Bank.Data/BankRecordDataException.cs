@@ -1,4 +1,4 @@
-namespace Swedishbankers.Bank.Data;
+namespace Bankinfrastruktur.Data;
 
 public class BankRecordDataException : Exception
 {

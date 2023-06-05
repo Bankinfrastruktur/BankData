@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Swedishbankers.Bank.Tests;
+namespace Bankinfrastruktur.Tests;
 
 public class DataValidationTests
 {

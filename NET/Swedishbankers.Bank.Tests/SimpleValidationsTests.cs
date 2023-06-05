@@ -1,4 +1,4 @@
-namespace Swedishbankers.Bank.Tests;
+namespace Bankinfrastruktur.Tests;
 
 public class SimpleValidationsTests
 {
