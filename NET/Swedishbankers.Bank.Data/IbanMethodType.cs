@@ -1,7 +1,7 @@
 namespace Swedishbankers.Bank.Data;
 
 /// <summary> How to generate IBAN
-/// https://www.swedishbankers.se/fraagor-vi-arbetar-med/betalningar/iban-och-svenskt-nationellt-kontonummer/
+/// https://web.archive.org/web/20230605132214/https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer
 /// </summary>
 public enum IbanMethodType
 {
