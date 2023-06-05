@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Swedishbankers.Bank.Data\Swedishbankers.Bank.Data.csproj" />
+    <ProjectReference Include="..\Bankinfrastruktur.Data\Bankinfrastruktur.Data.csproj" />
   </ItemGroup>
 
 </Project>

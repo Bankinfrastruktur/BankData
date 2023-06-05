@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swedishbankers.Bank.Data", "Swedishbankers.Bank.Data\Swedishbankers.Bank.Data.csproj", "{F17EEC58-7450-49F0-8598-7CE789E1CAA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bankinfrastruktur.Data", "Bankinfrastruktur.Data\Bankinfrastruktur.Data.csproj", "{F17EEC58-7450-49F0-8598-7CE789E1CAA4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E574ED9B-4F3F-4605-8BF9-01C8966AE989}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swedishbankers.Bank.Tests", "Swedishbankers.Bank.Tests\Swedishbankers.Bank.Tests.csproj", "{FE05CFF0-B2F0-4372-B325-D6B72272AC09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bankinfrastruktur.Tests", "Bankinfrastruktur.Tests\Bankinfrastruktur.Tests.csproj", "{FE05CFF0-B2F0-4372-B325-D6B72272AC09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
