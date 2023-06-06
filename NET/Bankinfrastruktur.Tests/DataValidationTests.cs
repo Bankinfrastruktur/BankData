@@ -11,6 +11,10 @@ public class DataValidationTests
         var banksFull = Data.Banks.GetBanks();
         var banksFullRecreated = Data.Banks.RecreateBankList(banksFull);
         Console.WriteLine(banksFullRecreated);
-        Assert.That(banksFullRecreated, Is.EqualTo(banksFull));
+        Assert.Multiple(() =>
+        {
+            Assert.That(banksFullRecreated, Is.EqualTo(banksFull));
+            Assert.That(Helpers.GetLines(Data.Banks.SourcePsv), Is.EqualTo(Helpers.GetLines(banksFull)), "Incorrect sortorder?");
+        });
     }
 }
