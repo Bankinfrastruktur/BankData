@@ -12,8 +12,7 @@ public class SimpleValidationsTests
     [TestCase("source.psv")]
     public void SourceFileHasCorrectEncoding(string fileName)
     {
-        var fi = Helpers.GetBaseDir().EnumerateFiles(fileName).First();
-        var fileData = File.ReadAllText(fi.FullName, System.Text.Encoding.UTF8);
+        var fileData = Helpers.FindAndReadTextFile(fileName);
         Assert.That(fileData, Helpers.ContainsAnyUmlaut(),
             fileData);
     }
