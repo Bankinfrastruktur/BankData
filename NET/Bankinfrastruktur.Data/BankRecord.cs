@@ -47,6 +47,8 @@ public class BankRecord
 
         if (CheckDigitType == CheckDigitTypeType.Invalid)
             throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"Invalid {nameof(CheckDigitType)} {CheckDigitType}");
+        if (BIC.Length != 8)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"Expected {nameof(BIC)} length 8 {BIC}");
         if (AccountType == AccountTypeType.Type1)
         {
             if (AccountNumberLength != 7)
@@ -56,6 +58,8 @@ public class BankRecord
         }
         else if (AccountType == AccountTypeType.Type2)
         {
+            if (AccountNumberLength == 7)
+                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberLength)} Not 7 was {AccountNumberLength}");
             if ((checkDigitType == CheckDigitTypeType.Comment1 ||
                 checkDigitType == CheckDigitTypeType.Comment3) &&
                 AccountNumberLength != 10)
