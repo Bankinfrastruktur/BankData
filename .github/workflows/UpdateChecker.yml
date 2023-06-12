@@ -1,0 +1,66 @@
+on:
+  push:
+  schedule:
+    - cron:  '47 15,18 * * 1-5'
+
+env:
+  Project: NET/UpdateChecker/UpdateChecker.csproj
+  IssueTemplate: UpdateCheckResultIssue.md
+
+name: UpdateChecker Issue creators
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  updatechecker:
+    runs-on: ubuntu-latest
+    env:
+      actionpath: ${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Setup env
+        id: setupurl
+        run: |
+          url=$(curl -s https://api.github.com/repos/${{ env.actionpath }}/jobs | jq -j .jobs[0].html_url)
+          echo "actionjoburl=$url" >> "$GITHUB_OUTPUT"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
+          echo "datets=$(date -u "+%Y-%m-%d_%H_%M")" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      - name: Cache doc data
+        id: cache-doc
+        uses: actions/cache@v3
+        with:
+          path: .doc_cache
+          key: doc_cache-${{ steps.setupurl.outputs.datets }}-${{ github.run_id }}
+          restore-keys: |
+            doc_cache-${{ steps.setupurl.outputs.datets }}
+            doc_cache-
+      - name: .NET Setup
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - run: dotnet restore $Project
+      - run: dotnet build $Project --configuration Release --no-restore
+      - name: Pre List .doc_cache
+        run: ls -lha .doc_cache || ls -lha
+      - name: Run Update Checker ${{ github.server_url }}/${{ env.actionpath }}
+        id: update-checker
+        run: |
+          ./NET/UpdateChecker/bin/Release/net6.0/UpdateChecker || (ls -lh; find .; exit 1)
+          [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
+      - name: Post List .doc_cache
+        run: ls -lha .doc_cache || ls -lha
+      - name: Create Issue
+        if: steps.update-checker.outputs.newdata == 'true'
+        id: create-issue
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          actionurl: ${{ steps.setupurl.outputs.actionjoburl }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          filename: $IssueTemplate
+          update_existing: false
+      - name: Issue created info
+        if: steps.create-issue.outputs.number != ''
+        run: echo Created issue ${{ steps.create-issue.outputs.number }} at ${{ steps.create-issue.outputs.url }}; exit 1

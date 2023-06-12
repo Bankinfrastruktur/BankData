@@ -1,8 +1,11 @@
 
 using Bankinfrastruktur.Helpers;
 
+Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("sv-SE");
+
 var diDocCache = Directory.CreateDirectory(".doc_cache");
 Console.WriteLine($"Working with {diDocCache.FullName} ...");
+var ghStepSummaryFile = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
 
 var pages = await UpdateChecker.GrabAndDownload.GetPages();
 var originalFiles = diDocCache.EnumerateFiles().ToList();
@@ -21,7 +24,10 @@ foreach (var page in pages)
         var docSha1 = await docSha1Task;
         if (docSha1 != fileSha1)
         {
-            Console.WriteLine($" from: {fileSha1} -> {docSha1} to {fi.FullName}");
+            var logline = $"* from: {fileSha1} -> {docSha1} to {fi.FullName}";
+            Console.WriteLine(logline);
+            if (ghStepSummaryFile is not null)
+                await File.AppendAllTextAsync(ghStepSummaryFile, $"{logline} src: {doc.Url}\n");
             modifiedDocuments.Add(doc);
             using (var fs = fi.OpenWrite())
             {
@@ -29,11 +35,23 @@ foreach (var page in pages)
                 fs.Close();
             }
         }
-
     }
 }
 
 if (modifiedDocuments.Count != 0)
 {
-    Console.WriteLine("TODO create template.md");
+    var fi = new FileInfo("UpdateCheckResultIssue.md");
+    Console.WriteLine($"Creating {fi.FullName}");
+    var actionUrl = "{{ env.actionurl }}";
+    File.WriteAllText(fi.FullName,
+@$"---
+title: Upptäckta ändringar i källfiler
+---
+Uppdaterade datafiler?
+
+* {string.Join("\n* ", modifiedDocuments)}
+
+{actionUrl}
+
+");
 }
