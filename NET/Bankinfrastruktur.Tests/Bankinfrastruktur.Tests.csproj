@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\Helpers\Base32.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
     <PackageReference Include="NUnit" Version="*" />
     <PackageReference Include="NUnit3TestAdapter" Version="*" />
@@ -27,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bankinfrastruktur.Data\Bankinfrastruktur.Data.csproj" />
+    <ProjectReference Include="..\UpdateChecker\UpdateChecker.csproj" />
   </ItemGroup>
 
 </Project>
