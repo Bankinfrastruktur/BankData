@@ -1,7 +1,7 @@
 on:
   push:
   schedule:
-    - cron:  '47 15,18 * * 1-5'
+    - cron:  '47 9,15,18 * * 1-5'
 
 env:
   Project: NET/UpdateChecker/UpdateChecker.csproj
@@ -51,7 +51,7 @@ jobs:
           [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
       - name: Post List .doc_cache
         run: ls -lha .doc_cache || ls -lha
-      - name: Create Issue
+      - name: Create Issue from ${{ env.IssueTemplate }}
         if: steps.update-checker.outputs.newdata == 'true'
         id: create-issue
         uses: JasonEtco/create-an-issue@v2
@@ -59,7 +59,7 @@ jobs:
           actionurl: ${{ steps.setupurl.outputs.actionjoburl }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          filename: $IssueTemplate
+          filename: ${{ env.IssueTemplate }}
           update_existing: false
       - name: Issue created info
         if: steps.create-issue.outputs.number != ''
