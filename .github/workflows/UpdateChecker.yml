@@ -25,23 +25,32 @@ jobs:
           url=$(curl -s https://api.github.com/repos/${{ env.actionpath }}/jobs | jq -j .jobs[0].html_url)
           echo "actionjoburl=$url" >> "$GITHUB_OUTPUT"
           echo "$url" >> "$GITHUB_STEP_SUMMARY"
-          echo "datets=$(date -u "+%Y-%m-%d_%H_%M")" >> $GITHUB_OUTPUT
+          echo "date=$(date -u "+%Y-%m-%d")" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v3
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v3
+        with:
+          path: NET/UpdateChecker/bin
+          key: build-${{ hashFiles('NET/**') }}
       - name: Cache doc data
         id: cache-doc
         uses: actions/cache@v3
         with:
           path: .doc_cache
-          key: doc_cache-${{ steps.setupurl.outputs.datets }}-${{ github.run_id }}
+          key: doc_cache-${{ steps.setupurl.outputs.date }}-${{ github.run_id }}
           restore-keys: |
-            doc_cache-${{ steps.setupurl.outputs.datets }}
+            doc_cache-${{ steps.setupurl.outputs.date }}
             doc_cache-
       - name: .NET Setup
+        if: steps.cache-build.outputs.cache-hit != 'true'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
       - run: dotnet restore $Project
+        if: steps.cache-build.outputs.cache-hit != 'true'
       - run: dotnet build $Project --configuration Release --no-restore
+        if: steps.cache-build.outputs.cache-hit != 'true'
       - name: Pre List .doc_cache
         run: ls -lha .doc_cache || ls -lha
       - name: Run Update Checker ${{ github.server_url }}/${{ env.actionpath }}
