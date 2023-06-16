@@ -7,7 +7,7 @@ public static partial class Banks
     private static List<BankRecord>? _bankList;
     public static List<BankRecord> BankList => _bankList ??= GetList(SourcePsv);
 
-    public static BankRecord GetBankFromClearing(int clearingNumber) =>
+    public static BankRecord? GetBankFromClearing(int clearingNumber) =>
         BankList.FirstOrDefault(b => b.MatchClearing(clearingNumber));
 
     public static string GetBanks() => GetBanks(BankList);
