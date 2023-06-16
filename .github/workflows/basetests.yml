@@ -1,11 +1,36 @@
 name: .NET
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  Config: Release
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup env event ${{ github.event_name }} action ${{ github.event.action }} ref ${{ github.ref }}@${{ github.sha }}
+        run: |
+          version=$(date -u "+%Y.%m.%d-alpha%H%M")
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8)
+          if [[ ${{ github.ref }} =~ ^refs/tags/v([0-9][0-9][0-9][0-9]\.[0-9]+\.[0-9]+)$ ]]; then
+              # override alpha version
+              if [[ ${{ github.event_name }} == release ]]; then
+                  version=${BASH_REMATCH[1]}
+              else
+                  version=${BASH_REMATCH[1]}-beta$SHORT_SHA
+              fi
+          fi
+          echo Version:$version
+          echo "Version $version" >> "$GITHUB_STEP_SUMMARY"
+          echo "version=$version" >> "$GITHUB_ENV"
+          echo "buildopts=--configuration $Config --no-restore -p:RepositoryCommit=$GITHUB_SHA -p:Version=$version" >> "$GITHUB_ENV"
       - uses: actions/checkout@v3
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -13,11 +38,11 @@ jobs:
           dotnet-version: 7.0.x
       - name: Install dependencies
         run: dotnet restore NET || (ls -lha && exit 1)
-      - name: Build
+      - name: Build ${{ env.buildopts }}
       # If built with less verbosity the code generation might fail in a race condition manner
-        run: dotnet build NET --configuration Release --no-restore --verbosity normal || dotnet build NET --configuration Release --no-restore --verbosity detailed
+        run: dotnet build NET ${{ env.buildopts }} --verbosity normal || dotnet build NET ${{ env.buildopts }} --verbosity detailed
       - name: Run Tests
-        run: dotnet test NET --configuration Release --no-restore --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./coverage || (ls -lha && exit 1)
+        run: dotnet test NET ${{ env.buildopts }} --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./coverage || (ls -lha && exit 1)
 
       - name: Generate Test Report
         uses: dorny/test-reporter@v1
@@ -51,3 +76,13 @@ jobs:
         with:
           recreate: true
           path: code-coverage-results.md
+
+      - name: NuGet Package ${{ github.repository_owner }} ${{ env.version }}
+        env:
+          ghnuget: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        run: |
+          dotnet pack NET/**/Bankinfrastruktur.Data.csproj ${{ env.buildopts }} --verbosity normal --output .
+          ls -lh *nupkg
+          dotnet nuget push *.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source ${{ env.ghnuget }} --skip-duplicate
+          dotnet nuget push *.snupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source ${{ env.ghnuget }} --skip-duplicate
+          dotnet nuget push *.nupkg --api-key ${{ secrets.NUGETKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

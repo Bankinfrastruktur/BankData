@@ -1,6 +1,6 @@
 # Bank data Clearing och IBAN uppgifter för svenska banker
 
-Sammanställning av data i maskinläsbart format från Bankgirot och Swedishbankers för validering och uträkning av clearingnummer och IBAN konto
+Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB) för validering och uträkning av clearingnummer och IBAN konto
 
 ## Data, updateringar och källor
 Se [Readme i Data](Data)

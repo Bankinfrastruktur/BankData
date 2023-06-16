@@ -2,9 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.2;netstandard2.0;net6.0;net7.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Bankinfrakstruktur;Swedishbankers;clearingnummer;bankkonto;IBAN</PackageTags>
+    <Summary>Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB)</Summary>
+    <PackageProjectUrl>https://github.com/Bankinfrastruktur/BankData</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Bankinfrastruktur/BankData.git</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <AssemblyTitle>$(AssemblyTitle) $(TargetFramework)</AssemblyTitle>
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <GenerateSource Include="..\..\Data\source.psv"/>
@@ -64,5 +78,9 @@ File.SetLastWriteTimeUtc(fi.FullName, File.GetLastWriteTimeUtc(srcFi.FullName));
     </Delete>
     <Message Text="Deleted files: '@(DeletedList)'"/>
   </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All"/>
+  </ItemGroup>
 
 </Project>
