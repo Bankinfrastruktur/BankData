@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.2;netstandard2.0;net6.0;net7.0</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>Bankinfrakstruktur;Swedishbankers;clearingnummer;bankkonto;IBAN</PackageTags>
-    <Summary>Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB)</Summary>
+    <PackageTags>Bankinfrastruktur;Swedishbankers;clearingnummer;bankkonto;BIC;IBAN</PackageTags>
+    <Description>Datacollection for how to validate Swedish bank accounts as well as BIC and IBAN details. Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB)</Description>
     <PackageProjectUrl>https://github.com/Bankinfrastruktur/BankData</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Bankinfrastruktur/BankData.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
