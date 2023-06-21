@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <GenerateSource Include="..\..\Data\source.psv"/>
+    <None Include="..\Key.snk" Link="Key.snk" />
     <None Include="@(GenerateSource)" />
   </ItemGroup>
 

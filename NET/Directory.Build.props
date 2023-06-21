@@ -13,8 +13,6 @@
 
   <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)/Key.snk')">
     <SignAssembly>true</SignAssembly>
-    <PublicSign>true</PublicSign><!-- https://github.com/dotnet/runtime/blob/main/docs/project/public-signing.md -->
-    <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
