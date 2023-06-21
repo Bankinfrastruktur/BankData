@@ -1,9 +1,10 @@
 # Bank data Clearing och IBAN uppgifter för svenska banker
+[![NuGet Badge (Bankinfrastruktur.Data)](https://buildstats.info/nuget/Bankinfrastruktur.Data)](https://www.nuget.org/packages/Bankinfrastruktur.Data)
 
 Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB) för validering och uträkning av clearingnummer och IBAN konto
 
 ## Data, updateringar och källor
-Se [Readme i Data](Data)
+Se [Readme i Data](https://github.com/Bankinfrastruktur/BankData/tree/main/Data)
 
 ## Avvikelser
 
