@@ -20,7 +20,7 @@ public class BankRecord
         BIC = string.Empty;
         AccountNumberMinLength = 7;
         AccountNumberLength = 7;
-        IbanMethod = IbanMethodType.MethodUnknown;
+        IbanMethod = IbanMethodType.MethodUnknown; // Since IBAN ID is unknown
     }
 
     /// <summary>Create instance from pipe separated dataline</summary>
@@ -45,10 +45,12 @@ public class BankRecord
         AccountNumberMinLength = int.Parse(s[i++]);
         AccountNumberLength = int.Parse(s[i++]);
 
+        if (ClearingEnd < ClearingStart)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(ClearingStart)} {ClearingStart} <= {nameof(ClearingEnd)} {ClearingEnd}");
         if (CheckDigitType == CheckDigitTypeType.Invalid)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"Invalid {nameof(CheckDigitType)} {CheckDigitType}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"{nameof(CheckDigitType)} {CheckDigitType}");
         if (BIC.Length != 8)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"Expected {nameof(BIC)} length 8 {BIC}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(BIC)} length 8 {BIC}");
         if (AccountType == AccountTypeType.Type1)
         {
             if (AccountNumberLength != 7)
@@ -70,8 +72,10 @@ public class BankRecord
         }
         else
         {
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"Invalid {nameof(AccountType)}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"unhandled {nameof(AccountType)}");
         }
+        if (AccountNumberLength < AccountNumberMinLength)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberMinLength)} {AccountNumberMinLength} <= {nameof(AccountNumberLength)} {AccountNumberLength}");
     }
 
     public override string ToString()
@@ -94,9 +98,9 @@ public class BankRecord
     public string BIC { get; }
     public string BankName { get; }
 
-    public CheckDigitTypeType CheckDigitType { get; }
     public AccountTypeType AccountType { get; }
+    public CheckDigitTypeType CheckDigitType { get; }
     public IbanMethodType IbanMethod { get; }
-    public int AccountNumberLength { get; }
     public int AccountNumberMinLength { get; }
+    public int AccountNumberLength { get; }
 }

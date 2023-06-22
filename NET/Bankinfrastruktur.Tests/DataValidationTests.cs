@@ -5,6 +5,39 @@ namespace Bankinfrastruktur.Tests;
 
 public class DataValidationTests
 {
+    [TestCase(0)]
+    [TestCase(999)]
+    [TestCase(1000)]
+    [TestCase(1099)]
+    [TestCase(9999)]
+    [TestCase(10000)]
+    public void BankDataNotFoundTest(int clearing) => 
+        Assert.That(Data.Banks.GetBankFromClearing(clearing), Is.Null);
+
+    // based on data in data file, if that changes, these test parameters might need updates
+    [TestCase(3300, 3300, 300, "NDEASESS", "Nordea", Data.AccountTypeType.Type2, Data.CheckDigitTypeType.Comment1, Data.IbanMethodType.Method2, 10, 10)]
+    [TestCase(7100, 7999, 800, "SWEDSESS", "Swedbank", Data.AccountTypeType.Type1, Data.CheckDigitTypeType.Comment1, Data.IbanMethodType.Method1, 7, 7)]
+    [TestCase(8900, 8999, 800, "SWEDSESS", "Swedbank", Data.AccountTypeType.Type2, Data.CheckDigitTypeType.Comment3, Data.IbanMethodType.Method3, 7, 10)]
+    public void BankDataFoundValidationTest(int clearing, int clearingEnd,
+        int ibanId, string bic, string bankName, Data.AccountTypeType accountType, Data.CheckDigitTypeType checkDigitType,
+        Data.IbanMethodType ibanMethod, int accMinLen, int accLen)
+    {
+        var br = Data.Banks.GetBankFromClearing(clearing);
+        Assert.That(br, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(br.ClearingEnd, Is.EqualTo(clearingEnd));
+            Assert.That(br.IbanId, Is.EqualTo(ibanId));
+            Assert.That(br.BIC, Is.EqualTo(bic));
+            Assert.That(br.BankName, Is.EqualTo(bankName));
+            Assert.That(br.AccountType, Is.EqualTo(accountType));
+            Assert.That(br.CheckDigitType, Is.EqualTo(checkDigitType));
+            Assert.That(br.IbanMethod, Is.EqualTo(ibanMethod));
+            Assert.That(br.AccountNumberMinLength, Is.EqualTo(accMinLen));
+            Assert.That(br.AccountNumberLength, Is.EqualTo(accLen));
+        });
+    }
+
     [Test]
     public void DumpBankList()
     {
