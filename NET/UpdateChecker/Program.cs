@@ -34,6 +34,10 @@ foreach (var page in pages)
                 doc.Data.WriteTo(fs);
                 fs.Close();
             }
+
+            var parsedData = DocumentExtractor.GetData(doc.Url, doc.Data);
+            if (ghStepSummaryFile is not null && parsedData is not null)
+                await File.AppendAllTextAsync(ghStepSummaryFile, $"Data: {parsedData}\n");
         }
     }
 }
