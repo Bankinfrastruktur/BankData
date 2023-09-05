@@ -1,4 +1,4 @@
-# https://web.archive.org/web/20230512080146/https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf
+# https://web.archive.org/web/20230905155004/https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf
 Svea Bank AB 9660-9669 00000xxxxxxC 2
 Aion Bank SA 9580 – 9589 00000xxxxxxC 1
 Avanza Bank AB 9550-9569 00000xxxxxxC 2
@@ -23,7 +23,7 @@ Länsförsäkringar Bank 9020-9029 00000xxxxxxC 2
 Länsförsäkringar Bank 9060-9069 00000xxxxxxC 1
 Marginalen Bank 9230-9239 00000xxxxxxC 1
 Multitude Bank plc 9070-9079 00000xxxxxxC 1
-Nordax Bank AB 9640-9649 00000xxxxxxC 2
+NOBA Bank Group AB 9640-9649 00000xxxxxxC 2
 Nordea 1100-1199 00000xxxxxxC 1
 Nordea 1400-2099 00000xxxxxxC 1
 Nordea (exkl. personkonton, cl 3300) 3000-3399 00000xxxxxxC 1
