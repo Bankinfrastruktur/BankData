@@ -85,7 +85,7 @@ public class AccountTests
     [TestCase("123, 4", "123", "4", "123, 4")]
     [TestCase("gar be ge", null, null, null)]
     [TestCase("gar, be ge", "", "be ge", "-")]
-    public void BankAccountParseTest(string parse, string clearing, string account, string written)
+    public void BankAccountParseTest(string parse, string? clearing, string? account, string? written)
     {
         var parsed = Account.Parse(parse);
         if (clearing is null)
