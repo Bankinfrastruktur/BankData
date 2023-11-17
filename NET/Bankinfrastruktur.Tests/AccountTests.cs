@@ -83,6 +83,7 @@ public class AccountTests
     [TestCase("3300, 101010-1010", "3300", "101010-1010", "3300, 101010-1010")]
     [TestCase("8480-5, 1010101010", "84805", "1010101010", "84805, 1010101010")]
     [TestCase("123, 4", "123", "4", "123, 4")]
+    [TestCase("123", "123", "", "123, ")]
     [TestCase("gar be ge", null, null, null)]
     [TestCase("gar, be ge", "", "be ge", "-")]
     public void BankAccountParseTest(string parse, string? clearing, string? account, string? written)
@@ -106,6 +107,11 @@ public class AccountTests
             Assert.That(parsed.ToString(), Is.EqualTo(written));
         });
     }
+
+    [Test]
+    [TestCase(null)]
+    [TestCase("")]
+    public void BankAccountParseEmptyTest(string? parse) => Assert.That(Account.Parse(parse), Is.Null);
 
     [Test]
     [TestCase("3300", "Nordea")]
@@ -192,6 +198,7 @@ public class AccountTests
         }
     }
 
+    [TestCase("832790")]
     [TestCase("83279")]
     [TestCase("123456782")]
     [TestCase("3316812057492")]
@@ -199,11 +206,12 @@ public class AccountTests
     {
         Assert.Multiple(() =>
         {
-            Assert.That(SeMod10.Calc(data[0..^1]), Is.EqualTo(int.Parse(data[^1..])), "last digit");
+            Assert.That(SeMod10.Calc(data[..^1]), Is.EqualTo(data[^1] - '0'), "last digit");
             Assert.That(SeMod10.Check(data), Is.True);
         });
     }
 
+    [TestCase(" 11150")]
     [TestCase("71041234562")]
     [TestCase("71021234567")]
     [TestCase(" 2763608957")]
@@ -220,4 +228,21 @@ public class AccountTests
             Assert.That(SeMod11.Check(data[1..]), Is.True);
         });
     }
+
+    [TestCase("11118")]
+    public void Mod11InvalidRest1Test(string data) => Assert.That(() => SeMod11.Calc(data), Throws.InstanceOf<ArgumentOutOfRangeException>());
+
+    [TestCase("")]
+    public void GetBankNoMatchTest(string clearing) => Assert.That(() => Account.GetBank(clearing, ""), Is.Null);
+
+    [Test]
+    public void CanConvertToIbanBankRecordNoTest() => Assert.That(((Data.BankRecord?)null).CanConvertToIban(), Is.False);
+
+    [TestCase("", false)]
+    [TestCase("1", false)]
+    [TestCase("8", true)]
+    public void IsSwb8Test(string clearing, bool expected) => Assert.That(Account.IsSwb8(clearing), Is.EqualTo(expected));
+
+    [Test]
+    public void CanConvertToIbanAccountNoTest() => Assert.That(((Account?)null).CanConvertToIban(), Is.False);
 }
