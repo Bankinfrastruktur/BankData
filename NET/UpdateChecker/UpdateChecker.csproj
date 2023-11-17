@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\Helpers\*.cs" LinkBase="Helpers" />
   </ItemGroup>
 

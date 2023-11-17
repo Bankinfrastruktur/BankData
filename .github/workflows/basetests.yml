@@ -42,7 +42,7 @@ jobs:
       # If built with less verbosity the code generation might fail in a race condition manner
         run: dotnet build NET ${{ env.buildopts }} --verbosity normal || dotnet build NET ${{ env.buildopts }} --verbosity detailed
       - name: Run Tests
-        run: dotnet test NET ${{ env.buildopts }} --verbosity normal --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./coverage || (ls -lha && exit 1)
+        run: dotnet test NET ${{ env.buildopts }} --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Generate Test Report
         uses: dorny/test-reporter@v1
