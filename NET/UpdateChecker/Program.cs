@@ -7,12 +7,21 @@ var diDocCache = Directory.CreateDirectory(".doc_cache");
 Console.WriteLine($"Working with {diDocCache.FullName} ...");
 var ghStepSummaryFile = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
 
-var pages = await UpdateChecker.GrabAndDownload.GetPages();
+var pagesTask = UpdateChecker.GrabAndDownload.GetPages();
 var originalFiles = diDocCache.EnumerateFiles().ToList();
-var modifiedDocuments = new List<UpdateChecker.GrabAndDownload.Document>();
-foreach (var page in pages)
+var filesWithHash = originalFiles.AsParallel().ToDictionary(fi => fi, DocumentHelpers.GetFileSha1Base32Async);
+foreach (var fwh in filesWithHash)
 {
-    foreach (var doc in page.Documents)
+    var digest = await fwh.Value.ConfigureAwait(false);
+    var fi = fwh.Key;
+    Console.WriteLine($"* Existing local file: {fi.Name}\t{fi.Length}\t{digest}");
+}
+
+var modifiedDocuments = new List<UpdateChecker.GrabAndDownload.Document>();
+var documents = (await pagesTask).SelectMany(p => p.Documents);
+if (true)
+{
+    foreach (var doc in documents)
     {
         var file = Path.GetFileName(doc.Url.LocalPath);
         var docSha1Task = DocumentHelpers.GetSha1Base32Async(doc.Data);
@@ -20,7 +29,7 @@ foreach (var page in pages)
         var fileFullPath = Path.Combine(diDocCache.FullName, file);
         var fi = new FileInfo(fileFullPath);
 
-        string? fileSha1 = await DocumentHelpers.GetFileSha1Base32Async(fi);
+        var fileSha1 = await DocumentHelpers.GetFileSha1Base32Async(fi);
         var docSha1 = await docSha1Task;
         if (docSha1 != fileSha1)
         {
@@ -32,8 +41,15 @@ foreach (var page in pages)
             using (var fs = fi.OpenWrite())
             {
                 doc.Data.WriteTo(fs);
+                fs.SetLength(doc.Data.Length); // ensure existing files are truncated to correct size
+                await fs.FlushAsync();
                 fs.Close();
             }
+
+            fi.Refresh();
+            fileSha1 = await DocumentHelpers.GetFileSha1Base32Async(fi);
+            if (fileSha1 != docSha1)
+                throw new Exception($"* {fi.FullName} On-disk hash was {fileSha1} expected {docSha1}, size: {fi.Length} expected {doc.Data.Length}");
 
             var parsedData = DocumentExtractor.GetData(doc.Url, doc.Data);
             if (ghStepSummaryFile is not null && parsedData is not null)
