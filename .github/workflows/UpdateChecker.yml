@@ -58,6 +58,11 @@ jobs:
         run: |
           ./NET/UpdateChecker/bin/Release/net6.0/UpdateChecker || (ls -lh; find .; exit 1)
           [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
+      - name: doc artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-from-cache
+          path: .doc_cache
       - name: Post List .doc_cache
         run: ls -lha .doc_cache || ls -lha
       - name: Create Issue from ${{ env.IssueTemplate }}
