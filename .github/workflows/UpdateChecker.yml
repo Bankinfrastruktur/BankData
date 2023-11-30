@@ -10,8 +10,9 @@ env:
 name: UpdateChecker Issue creators
 
 permissions:
-  contents: read
+  contents: write
   issues: write
+  pull-requests: write
 
 jobs:
   updatechecker:
@@ -58,6 +59,42 @@ jobs:
         run: |
           ./NET/UpdateChecker/bin/Release/net6.0/UpdateChecker || (ls -lh; find .; exit 1)
           [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+      - name: Install Python Pip dependencies
+        run:  python -m pip install --upgrade pip setuptools wheel
+      - name: Install Python Pdf dependencies
+        run:  python -m pip install -r Data/Tools/requirements.txt
+      - name: Install OS camelot dependencies
+        run:  sudo apt install -y ghostscript python3-tk libgl1
+      - name: Run ParsePdfs.py
+        run:  python Data/Tools/ParsePdfs.py
+      - name: Stage Data to git
+        run:  git add Data
+      - name: Check Data changes
+        id:   data-changes
+        run:  git diff --staged --quiet || echo "staged=true" >> "$GITHUB_OUTPUT"
+      - name: Update IssueTemplate with Data diff
+        if:   steps.data-changes.outputs.staged == 'true'
+        run: |
+          echo "\`\`\`diff" >> $IssueTemplate
+          git diff --staged >> $IssueTemplate
+          echo "\`\`\`" >> $IssueTemplate
+          cat $IssueTemplate
+          cat $IssueTemplate >> "$GITHUB_STEP_SUMMARY"
+      - name: Create UpdateCheckerDiscovery branch
+        if:   steps.data-changes.outputs.staged == 'true'
+        run: |
+          git checkout -b UpdateCheckerDiscovery
+          git config user.email ""
+          git config user.name "Action UpdateChecker"
+          git commit -m "DATA UpdateChecker Changes from ParsePdfs"
+      - name: Push UpdateCheckerDiscovery branch
+        if:   steps.data-changes.outputs.staged == 'true'
+        run:  git push origin HEAD:refs/heads/UpdateCheckerDiscovery -f
       - name: doc artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -78,3 +115,9 @@ jobs:
       - name: Issue created info
         if: steps.create-issue.outputs.number != ''
         run: echo Created issue ${{ steps.create-issue.outputs.number }} at ${{ steps.create-issue.outputs.url }}; exit 1
+      - name: Pull request UpdateCheckerDiscovery
+        if:   steps.data-changes.outputs.staged == 'true'
+        id:   create-pr
+        run:  echo pr=$(gh pr create -B main -H UpdateCheckerDiscovery --title 'UpdateChecker Data changes' --body 'Created by Github action ${{ steps.create-issue.outputs.url }} From ${{ steps.setupurl.outputs.actionjoburl }}') >> "$GITHUB_OUTPUT"
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

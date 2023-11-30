@@ -1,0 +1,4 @@
+regex
+PyPDF2<3.0
+camelot-py[base]
+opencv-python
