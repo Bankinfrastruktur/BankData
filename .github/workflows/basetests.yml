@@ -78,6 +78,7 @@ jobs:
           path: code-coverage-results.md
 
       - name: NuGet Package ${{ github.repository_owner }} ${{ env.version }}
+        if: github.event_name == 'release'
         env:
           ghnuget: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         run: |
