@@ -9,7 +9,8 @@ public static class GrabAndDownload
     {
         return Task.WhenAll(
             GetPage(new Uri("https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer"), true),
-            GetPage(new Uri("https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/konto-och-clearingnummer"), false));
+            GetPage(new Uri("https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/konto-och-clearingnummer"), false),
+            GetPage(new Uri("https://www.swedishbankers.se/fraagor-vi-arbetar-med/finansiell-infrastruktur/dataclearingen/"), false));
     }
 
     public class Document
