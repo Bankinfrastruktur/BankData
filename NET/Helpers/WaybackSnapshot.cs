@@ -17,6 +17,21 @@ public class WaybackSnapshot
 #endif
     }
 
+    public static async Task<WaybackSnapshot?> GetArchiveDataNoExceptions(Uri url, string? filterMime = "application/pdf")
+    {
+        try
+        {
+            return await GetArchiveData(url, filterMime);
+        }
+        catch (Exception ex)
+        {
+            if (ex.InnerException is not HttpRequestException)
+                throw;
+            Console.WriteLine($"{ex}");
+            return null;
+        }
+    }
+
     public static async Task<WaybackSnapshot?> GetArchiveData(Uri url, string? filterMime = "application/pdf")
     {
         var archiveUrl = new Uri($"{ArchiveBase}cdx/search/cdx?fl=timestamp,original,mimetype,digest,length&from={DateTime.Now.Year - 1}&filter=statuscode:200&collapse=digest&url={url}");
@@ -26,7 +41,7 @@ public class WaybackSnapshot
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Fetch Fail {archiveUrl}, {ex.Message}", ex);
+            throw new Exception($"Wayback fetch Fail {archiveUrl}, {ex.Message}", ex);
         }
     }
     
