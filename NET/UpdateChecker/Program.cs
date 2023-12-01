@@ -31,7 +31,7 @@ if (true)
         var fileFullPath = Path.Combine(diDocCache.FullName, file);
         var fi = new FileInfo(fileFullPath);
 
-        var fileSha1 = await DocumentHelpers.GetFileSha1Base32Async(fi);
+        var fileSha1 = await fi.GetFileSha1Base32Async();
         var docSha1 = await docSha1Task;
         if (docSha1 != fileSha1)
         {
@@ -49,7 +49,7 @@ if (true)
             }
 
             fi.Refresh();
-            fileSha1 = await DocumentHelpers.GetFileSha1Base32Async(fi);
+            fileSha1 = await fi.GetFileSha1Base32Async();
             if (fileSha1 != docSha1)
                 throw new Exception($"* {fi.FullName} On-disk hash was {fileSha1} expected {docSha1}, size: {fi.Length} expected {doc.Data.Length}");
 

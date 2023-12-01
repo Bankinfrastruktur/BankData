@@ -1,4 +1,3 @@
-using System.IO;
 using System.Security.Cryptography;
 
 namespace Bankinfrastruktur.Helpers;
@@ -7,19 +6,19 @@ public static class DocumentHelpers
 {
     public static readonly HttpClient HttpClient = new();
 
-    public static async Task<string> GetSha1Base32Async(Stream s)
+    public static async Task<string> GetSha1Base32Async(this Stream s)
     {
         s.Position = 0;
         return Base32.FromBytes(await SHA1.Create().ComputeHashAsync(s));
     }
 
-    public static async Task<string?> GetFileSha1Base32Async(FileInfo fi)
+    public static async Task<string?> GetFileSha1Base32Async(this FileInfo fi)
     {
         if (!fi.Exists)
             return null;
 
         using var fs = fi.OpenRead();
-        return await GetSha1Base32Async(fs);
+        return await fs.GetSha1Base32Async();
     }
 
     public static async Task<MemoryStream> FetchToMemoryAsync(Uri url)
