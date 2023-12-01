@@ -9,12 +9,13 @@ var ghStepSummaryFile = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY"
 
 var pagesTask = UpdateChecker.GrabAndDownload.GetPages();
 var originalFiles = diDocCache.EnumerateFiles().ToList();
+var oldFilesToRemove = originalFiles.ToDictionary(fi => Path.GetFileName(fi.Name));
 var filesWithHash = originalFiles.AsParallel().ToDictionary(fi => fi, DocumentHelpers.GetFileSha1Base32Async);
 foreach (var fwh in filesWithHash)
 {
     var digest = await fwh.Value.ConfigureAwait(false);
     var fi = fwh.Key;
-    Console.WriteLine($"* Existing local file: {fi.Name}\t{fi.Length}\t{digest}");
+    Console.WriteLine($"* Existing local file: {Path.GetFileName(fi.Name)}\t{fi.Length}\t{digest}");
 }
 
 var modifiedDocuments = new List<UpdateChecker.GrabAndDownload.Document>();
@@ -24,6 +25,7 @@ if (true)
     foreach (var doc in documents)
     {
         var file = Path.GetFileName(doc.Url.LocalPath);
+        oldFilesToRemove.Remove(file);
         var docSha1Task = DocumentHelpers.GetSha1Base32Async(doc.Data);
         Console.Write($"\n Validating {doc} -> {file}");
         var fileFullPath = Path.Combine(diDocCache.FullName, file);
@@ -56,6 +58,12 @@ if (true)
                 await File.AppendAllTextAsync(ghStepSummaryFile, $"Data: {parsedData}\n");
         }
     }
+}
+
+foreach (var fi in oldFilesToRemove.Values)
+{
+    Console.WriteLine($"* Cleanup old file: {Path.GetFileName(fi.Name)}\t{fi.Length}");
+    fi.Delete();
 }
 
 if (modifiedDocuments.Count != 0)
