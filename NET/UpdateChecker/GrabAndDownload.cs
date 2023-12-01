@@ -27,7 +27,7 @@ public static class GrabAndDownload
             ArchiveMetadata = archiveMetadata;
         }
 
-        public Uri UrlPreferArchive => ArchiveMetadata?.Digest == Sha1 ? ArchiveMetadata.DataUrl : Url;
+        public Uri UrlPreferArchive => ArchiveMetadata?.Digest == Sha1 ? ArchiveMetadata.ShowUrl : Url;
 
         public override string ToString() => $"{UrlPreferArchive} {Data.Length} {Sha1}";
     }
@@ -52,7 +52,7 @@ public static class GrabAndDownload
         {
             var mime = u.PathAndQuery.EndsWith(".docx") ?
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document" :
-                "application/pdf";
+                WaybackSnapshot.MimeApplicationPdf;
             var archiveMetadataTask = WaybackSnapshot.GetArchiveDataNoExceptions(u, mime);
             var srcDataTask = DocumentHelpers.FetchToMemoryAsync(u);
             var archiveMetadata = await archiveMetadataTask.ConfigureAwait(false);

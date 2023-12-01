@@ -17,7 +17,9 @@ public class WaybackSnapshot
 #endif
     }
 
-    public static async Task<WaybackSnapshot?> GetArchiveDataNoExceptions(Uri url, string? filterMime = "application/pdf")
+    public const string MimeApplicationPdf = "application/pdf";
+
+    public static async Task<WaybackSnapshot?> GetArchiveDataNoExceptions(Uri url, string? filterMime = MimeApplicationPdf)
     {
         try
         {
@@ -32,7 +34,7 @@ public class WaybackSnapshot
         }
     }
 
-    public static async Task<WaybackSnapshot?> GetArchiveData(Uri url, string? filterMime = "application/pdf")
+    public static async Task<WaybackSnapshot?> GetArchiveData(Uri url, string? filterMime = MimeApplicationPdf)
     {
         var archiveUrl = new Uri($"{ArchiveBase}cdx/search/cdx?fl=timestamp,original,mimetype,digest,length&from={DateTime.Now.Year - 1}&filter=statuscode:200&collapse=digest&url={url}");
         try
@@ -82,6 +84,7 @@ public class WaybackSnapshot
     /// <summary>length: The compressed byte size of the corresponding WARC record, which includes WARC headers, HTTP headers, and content payload.</summary>
     public long Length { get; set; }
 
+    public Uri ShowUrl => new($"{ArchiveBase}web/{Timestamp:yyyyMMddHHmmss}/{Url}");
     public Uri DataUrl => new($"{ArchiveBase}web/{Timestamp:yyyyMMddHHmmss}if_/{Url}");
 
     public override string ToString()

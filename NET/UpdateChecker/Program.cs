@@ -20,6 +20,7 @@ foreach (var fwh in filesWithHash)
 
 var modifiedDocuments = new List<UpdateChecker.GrabAndDownload.Document>();
 var documents = (await pagesTask).SelectMany(p => p.Documents);
+var pdfDocs = new List<(UpdateChecker.GrabAndDownload.Document, FileInfo)>();
 if (true)
 {
     foreach (var doc in documents)
@@ -29,6 +30,8 @@ if (true)
         Console.Write($"\n Validating {doc}");
         var fileFullPath = Path.Combine(diDocCache.FullName, file);
         var fi = new FileInfo(fileFullPath);
+        if (doc.ArchiveMetadata?.Mimetype == WaybackSnapshot.MimeApplicationPdf)
+            pdfDocs.Add((doc, fi));
 
         var fileSha1 = await fi.GetFileSha1Base32Async();
         if (doc.Sha1 != fileSha1)
@@ -58,6 +61,9 @@ if (true)
     }
 }
 
+var pdfStatusFileTask = File.WriteAllLinesAsync(".pdfstats", pdfDocs
+    .Select(docfi => $"{docfi.Item2.FullName}|{docfi.Item1.UrlPreferArchive}|{docfi.Item1.ArchiveMetadata?.Timestamp:yyyy-MM-dd}"));
+
 foreach (var fi in oldFilesToRemove.Values)
 {
     Console.WriteLine($"* Cleanup old file: {Path.GetFileName(fi.Name)}\t{fi.Length}");
@@ -81,3 +87,5 @@ Uppdaterade datafiler?
 
 ");
 }
+
+await pdfStatusFileTask;
