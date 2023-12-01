@@ -16,14 +16,20 @@ public static class GrabAndDownload
     {
         public Uri Url { get; private set; }
         public MemoryStream Data { get; private set; }
+        public string Sha1 { get; private set; }
+        public WaybackSnapshot? ArchiveMetadata { get; internal set; }
 
-        public Document(Uri uri, MemoryStream data)
+        public Document(Uri uri, MemoryStream data, string srcSha1, WaybackSnapshot? archiveMetadata)
         {
             Url = uri;
             Data = data;
+            Sha1 = srcSha1;
+            ArchiveMetadata = archiveMetadata;
         }
 
-        public override string ToString() => $"{Url} {Data.Length}";
+        public Uri UrlPreferArchive => ArchiveMetadata?.Digest == Sha1 ? ArchiveMetadata.DataUrl : Url;
+
+        public override string ToString() => $"{UrlPreferArchive} {Data.Length} {Sha1}";
     }
 
     public class Page
@@ -49,19 +55,20 @@ public static class GrabAndDownload
                 "application/pdf";
             var archiveMetadataTask = WaybackSnapshot.GetArchiveDataNoExceptions(u, mime);
             var srcDataTask = DocumentHelpers.FetchToMemoryAsync(u);
-            var archiveMetadata = await archiveMetadataTask;
+            var archiveMetadata = await archiveMetadataTask.ConfigureAwait(false);
             if (lastSnap is null ||
                 archiveMetadata?.Timestamp > lastSnap.Timestamp) lastSnap = archiveMetadata;
 
-            var srcData = await srcDataTask;
-            var doc = new Document(u, srcData);
+            var srcData = await srcDataTask.ConfigureAwait(false);
             var srcSha1 = await srcData.GetSha1Base32Async();
+            var doc = new Document(u, srcData, srcSha1, archiveMetadata);
             page.Documents.Add(doc);
             Console.WriteLine($" * Downloaded {u} {srcSha1} {srcData.Length:#,##0}");
             if (archiveMetadata is null ||
                 srcSha1 == archiveMetadata.Digest) continue;
             Console.WriteLine($"{u} new: {srcSha1} archived {archiveMetadata.Digest}");
-            await WaybackSnapshot.RequestSaveAsync(u);
+            await WaybackSnapshot.RequestSaveAsync(u).ConfigureAwait(false);
+            doc.ArchiveMetadata = await WaybackSnapshot.GetArchiveDataNoExceptions(u, mime);
         }
 
         var pageArchiveMetadata = await pageArchiveMetadataTask;
