@@ -1,6 +1,5 @@
-# Tabell över Clearingnummer och deras respektive IBAN ID, BIC, Metod och namn på bank
-# ex https://web.archive.org/web/20230907140651/https://www.bankinfrastruktur.se/media/s0of3yyj/iban-id-och-bic-adress-for-banker-2023-09-07.pdf
-# TODO automate parsing of PDF unless BSAB start publishing machine readable data
+# https://web.archive.org/web/20230907140651/https://www.bankinfrastruktur.se/media/s0of3yyj/iban-id-och-bic-adress-for-banker-2023-09-07.pdf
+# Tabell över Clearingnummer och deras respektive IBAN ID, BIC, Metod och namn på bank (2023-09-07)
 1100-1199 300 NDEASESS Nordea 1
 1200-1399 120 DABASESX Danske Bank 1
 1400-2099 300 NDEASESS Nordea 1
@@ -35,7 +34,6 @@
 9460-9469 946 BSNOSESS Santander Consumer Bank 1
 9470-9479 947 FTSBSESS BNP Paribas 1
 9500-9549 950 NDEASESS Nordea (Plusgirot) 2
-*Swedbank har meddelat att serien utgår i samband med att Dataclearingen avvecklas.
 9550-9569 955 AVANSES1 Avanza Bank 1
 9570-9579 957 SPSDSE23 Sparbanken Syd 2
 9580-9589 958 BMPBSESS AION Bank 1
