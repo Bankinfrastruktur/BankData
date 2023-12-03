@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 
 namespace Bankinfrastruktur.Tests;
@@ -74,9 +73,6 @@ public class DataValidationTests
         });
     }
 
-    private static bool IsSep(char c) => c == ' ' || c == '|'
-        || CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.SpaceSeparator;
-
     private static IEnumerable<string> StripToBankgirotTypComment(string data) =>
         Helpers.GetLines(data)
         .Select(l => l.Split('|'))
@@ -89,59 +85,30 @@ public class DataValidationTests
 
     private static IEnumerable<string[]> ParseBankgirotLine(string l)
     {
-        // Name, clearing - clearing format comment
-        var i = l.Length - 1;
-        var curS = new StringBuilder(i);
-        var parts = new List<string>();
+        // Name|clearing - clearing|format|comment
+        var parts = l.Split('|');
+        Assert.That(parts, Has.Length.EqualTo(4), l);
+        var name = parts[0];
+        var clearinRange = parts[1];
+        var format = parts[2];
+        var comment = parts[3];
+        Assert.That(comment, Has.Length.EqualTo(1), $"Comment should be one char {comment} in line {l}");
+        Assert.That(comment, Is.AnyOf("1", "2", "3"), $"Comment should be one of 1,2,3 {comment} in line {l}");
         var formatLength = 0;
         var prefixLength = 0;
-        // field = comment = 0, format = 1, clearing = 2, name = 3
-        while (i >= 0)
+        foreach (var c in format.Reverse())
         {
-            var c = l[i--];
-            var isSepCandidate = IsSep(c);
-            if (isSepCandidate && parts.Count <= 1)
-            {
-                if (parts.Count == 0)
-                {
-                    Assert.That(curS.Length, Is.EqualTo(1), $"Comment should be one char {curS} in line {l}");
-                    Assert.That(curS.ToString(), Is.AnyOf("1", "2", "3"), $"Comment should be one of 1,2,3 {curS} in line {l}");
-                }
-                parts.Insert(0, curS.ToString());
-                curS.Clear();
-                continue;
-            }
-            if (parts.Count == 1)
-            {
-                var expectedChars = formatLength == 0 ? new char[] { 'C' } :
-                    prefixLength == 0 ? new char[] { 'x', '0' } :
-                    new char[] { '0' };
-                Assert.That(c, Is.AnyOf(expectedChars), $"Unexpected format char, prev {curS} from {l}");
-                if (c == 'C' || c == 'x')
-                    formatLength++;
-                else prefixLength++;
-            }
-            else if (isSepCandidate && parts.Count == 2)
-            {
-                var cnxt = l[i];
-                var ctcnxt = CharUnicodeInfo.GetUnicodeCategory(cnxt);
-                if (ctcnxt == UnicodeCategory.UppercaseLetter ||
-                    ctcnxt == UnicodeCategory.LowercaseLetter ||
-                    ctcnxt == UnicodeCategory.ClosePunctuation)
-                {
-                    parts.Insert(0, curS.ToString());
-                    curS.Clear();
-                }
-                continue;
-            }
-            curS.Insert(0, c);
+            var allowedChars = formatLength == 0 ? new char[] { 'C' } :
+                prefixLength == 0 ? new char[] { 'x', '0' } :
+                new char[] { '0' };
+            Assert.That(c, Is.AnyOf(allowedChars), $"Unexpected format char in {format} from {l}");
+            if (c == 'C' || c == 'x')
+                formatLength++;
+            else prefixLength++;
         }
-        parts.Insert(0, curS.ToString());
         var debugLine = $"{l} : {string.Join('|', parts)} {prefixLength} : {formatLength}";
-        var clearinRange = parts[1];
         Assert.Multiple(() =>
         {
-            Assert.That(parts, Has.Count.EqualTo(4), debugLine);
             Assert.That(prefixLength + formatLength, Is.EqualTo(12), debugLine);
             Assert.That(clearinRange, Has.Length.EqualTo(9), debugLine);
             Assert.That(clearinRange[4], Is.AnyOf('-', '/'), debugLine);
@@ -150,11 +117,11 @@ public class DataValidationTests
         var clrStart = Convert.ToInt32(clearinRange[..4]);
         var clrEnd = Convert.ToInt32(clearinRange[5..]);
         var typ = formatLength == 7 ? "1" : "2";
-        var name = parts[0]
+        name = name
             .Replace(" - personkonto", string.Empty)
             .Replace("/Plusgirot", " (Plusgirot)")
             .Replace(" Bank AB", " Bank");
-        var normParts = new[] { null, null, name, $"Type{typ}", $"Comment{parts[3]}", $"{formatLength}" };
+        var normParts = new[] { "", "", name, $"Type{typ}", $"Comment{parts[3]}", $"{formatLength}" };
         var ranges = new[] { (clrStart, clrEnd) };
         if (clearinRange[4] == '/')
             ranges = new[] { (clrStart, clrStart), 
@@ -163,8 +130,7 @@ public class DataValidationTests
         {
             if (clrStart < splClr && splClr < clrEnd)
             {
-                ranges = new[] { (clrStart, splClr - 1),
-                (splClr + 1, clrEnd) };
+                ranges = new[] { (clrStart, splClr - 1), (splClr + 1, clrEnd) };
                 normParts[2] = name.Replace($" (exkl. personkonton, cl {splClr})", string.Empty);
             }
         }
@@ -174,7 +140,7 @@ public class DataValidationTests
             normParts[0] = $"{r.clrStart}";
             normParts[1] = $"{r.clrEnd}";
             // Console.WriteLine($"{string.Join('|', normParts)} src: {string.Join('|', parts)}");
-            return new[] { normParts as string[] };
+            return new[] { normParts };
         });
     }
 
@@ -227,41 +193,38 @@ public class DataValidationTests
 
     private static IEnumerable<string[]> ParseIbanBicLine(string l)
     {
-        int i = 0;
-        var clearingStart = Convert.ToInt32(l[..(i += 4)]);
+        var parts = l.Split('|');
+        Assert.That(parts, Has.Length.EqualTo(5), l);
+        var clearing = parts[0];
+        var sibanId = parts[1];
+        var bic = parts[2];
+        var name = parts[3];
+        var method = parts[4];
+        if (clearing[^1] == '*')  // ignore notes *Swedbank har meddelat att serien utgår i samband med att Dataclearingen avvecklas.
+            clearing = clearing[..^1];
+
+        var clearingStart = Convert.ToInt32(clearing[..4]);
         if (TextCleaners.TryGetValue(clearingStart, out var cleanThis) &&
             l.Contains(cleanThis.Item1))
         {
             Console.WriteLine($" Modifying {l} -> {cleanThis.Item2[0]} ...");
             return cleanThis.Item2.SelectMany(r => ParseIbanBicLine(l.Replace(cleanThis.Item1, r)));
         }
-        var clearingEnd = clearingStart;
-        if (l[i++] == '-')
+
+        Assert.Multiple(() =>
         {
-            clearingEnd = Convert.ToInt32(l.Substring(i, 4));
-            i += 4;
-        }
-        if (l[i] == '*')
-            i++; // ignore notes *Swedbank har meddelat att serien utgår i samband med att Dataclearingen avvecklas.
-        if (!IsSep(l[i++]))
-            throw new FormatException($"Expected Pipe at {i-1} (Between clearing end and IbanId) on {l}");
-        var ibanId = Convert.ToInt32(l.Substring(i, 3));
-        i += 3;
-        if (!IsSep(l[i++]))
-            throw new FormatException($"Expected Pipe at {i - 1} (Between IbanId and BIC) on {l}");
-        var bic = l.Substring(i, 8);
-        i += 8;
-        if (!IsSep(l[i++]))
-            throw new FormatException($"Expected Pipe at {i - 1} (Between BIC and name) on {l}");
-        var name = l[i..];
-        // TODO check for last diggit indicating method
-        var method = name[^2..];
-        if (IsSep(method[0]))
-        {
-            method = method[1..];
-            name = name[..^2];
-        }
-        else method = ForceMethod.TryGetValue(clearingStart, out var forceMethod) ? forceMethod : "?";
+            Assert.That(clearing, Has.Length.EqualTo(9), l);
+            Assert.That(sibanId, Has.Length.EqualTo(3), l);
+            Assert.That(bic, Has.Length.EqualTo(8), l);
+            Assert.That(method, Has.Length.AnyOf(0, 1), l);
+            Assert.That(clearing[4], Is.EqualTo('-'), l);
+        });
+
+        var clearingEnd = Convert.ToInt32(clearing[5..]);
+        var ibanId = Convert.ToInt32(sibanId);
+        if (method.Length == 0)
+            method = ForceMethod.TryGetValue(clearingStart, out var forceMethod) ? forceMethod : "Unknown";
+        Assert.That(method, Is.AnyOf("1", "2", "3", "Unknown"), l);
         return new[] { new[] { $"{clearingStart}", $"{clearingEnd}", $"{ibanId}", bic, name, method } };
     }
 
@@ -270,14 +233,11 @@ public class DataValidationTests
         var ibanIdBic = new Dictionary<int, string>();
         foreach (var s in Helpers.GetLines(data).SelectMany(ParseIbanBicLine))
         {
-            var ibanId = int.Parse(s[2]);
+            var ibanId = Convert.ToInt32(s[2]);
             if (ibanIdBic.TryGetValue(ibanId, out var existingBic))
                 Assert.That(s[3], Is.EqualTo(existingBic));
             ibanIdBic[ibanId] = s[3];
-            var method = s[5];
-            if (method == "0" || method == "?")
-                method = "Unknown";
-            yield return string.Join("|", s[0], s[1], s[2], s[3], s[4], "Method" + method);
+            yield return string.Join("|", s[0], s[1], s[2], s[3], s[4], "Method" + s[5]);
         }
         // Dictionary to help with IbanID and BIC in full set
         Console.WriteLine($"var {nameof(ibanIdBic)} = new Dictionary<int, string>() {{");
