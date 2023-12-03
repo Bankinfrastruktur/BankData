@@ -29,7 +29,8 @@ def splittomultiplerows(row):
         yield rc
 
 def strrow(row):
-    return " ".join(fixfield(v) for v in row).strip()
+    sep = "" if row[1] == "" else "|"
+    return sep.join(fixfield(v) for v in row).strip()
 
 def parsebankgirot(file, url, archivedate):
     # extract document date, often delay between document and release
