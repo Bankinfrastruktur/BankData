@@ -59,6 +59,8 @@ jobs:
         run: |
           ./NET/UpdateChecker/bin/Release/net6.0/UpdateChecker || (ls -lh; find .; exit 1)
           [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
+          bash Data/Tools/update-readme-with-konto.sh
+          git add README.md
       - name: Set up Python
         if: steps.update-checker.outputs.newdata == 'true'
         uses: actions/setup-python@v4
@@ -80,8 +82,7 @@ jobs:
       - name: Stage Data to git
         if: steps.update-checker.outputs.newdata == 'true'
         run:  git add Data
-      - name: Check Data changes
-        if: steps.update-checker.outputs.newdata == 'true'
+      - name: Check for changes
         id:   data-changes
         run:  git diff --staged --quiet || echo "staged=true" >> "$GITHUB_OUTPUT"
       - name: Update IssueTemplate with Data diff
