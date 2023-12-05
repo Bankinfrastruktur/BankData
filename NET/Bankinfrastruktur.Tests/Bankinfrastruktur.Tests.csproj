@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\Data\**" Link="RepoFiles\Data\%(RecursiveDir)/%(FileName)%(Extension)" />
+    <None Include="..\..\.github\**" Link="RepoFiles\GitHub\%(RecursiveDir)/%(FileName)%(Extension)" />
+    <None Include="..\..\*md" Link="RepoFiles\%(RecursiveDir)/%(FileName)%(Extension)" />
+    <None Include="..\..\**\*html" Link="RepoFiles\%(RecursiveDir)/%(FileName)%(Extension)" />
+    <None Include="..\..\**\Directory.Build.props" Link="RepoFiles\%(RecursiveDir)/%(FileName)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="*" />
     <PackageReference Include="NUnit" Version="*" />
     <PackageReference Include="NUnit3TestAdapter" Version="*" />
