@@ -1,0 +1,198 @@
+﻿<h1>Validera kontonummer och konvertera till IBAN</h1>
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                <label for="account_nr">Kontonummer</label>
+            </td>
+            <td>
+                <input type="text" size="24" maxlength="20" value="8327-9, 12 345 678-2" id="account_nr">
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <div id="msg"></div>
+                <div id="msg2"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="iban_nr">IBAN</label>
+            </td>
+            <td><input size="30" id="iban_nr" /></td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                <div id="msgiban"></div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<pre>
+validera
+...
+Full ...
+Banknamn
+kontotyp, kommentar
+Iban Id
+BIC
+Iban Method
+</pre>
+
+<script src="../TS/dist/index.js"></script>
+<script>
+    var acc_nr = document.getElementById('account_nr');
+    var iban_nr = document.getElementById('iban_nr');
+    var msg_out = document.getElementById('msg');
+    var msg2_out = document.getElementById('msg2');
+    var msgiban_out = document.getElementById('msgiban');
+
+    function getchev(state) {
+        return state === true ? "\u{2705}" : (state === false ? "\u{274c}" : "\u{2796}");
+    }
+
+    function handleAccount() {
+        let msg = "";
+        for (let check of getChecks(acc_nr.value)) {
+            msg += getchev(check.ok) + " " + (check.text.trim() + " " + check.message).trim() + "\n";
+        }
+        msg2_out.innerText = msg;
+
+        var m = kontose.getNums(acc_nr.value);
+        if (m.length == 0) {
+            return reset()
+        }
+
+        if (m[0] == '8') {
+            if (m.length < 10 || 15 < m.length)
+                return accInvalid("clr 8: expected length 10-15");
+            if (!kontose.mod10check(m.substring(0, 5)))
+                return accInvalid("clr 8: clearing(5) checkdigit missmatch");
+            if (!kontose.mod10check(m.substring(5)))
+                return accInvalid("clr 8: account checkdigit missmatch");
+            return setIbanOk(800, m.substring(0, 5) + kontose.padstart0(m.substring(5), 10))
+        }
+        if (m[0] == '7') {
+            if (m.length != 11) return accInvalid("clr 7: expected length 11");
+            if (!kontose.mod11check(m.substring(1))) return accInvalid("clr 7: checkdigit missmatch");
+            return setIbanOk(800, m.substring(0, 4) + kontose.padstart0(m.substring(4), 7));
+        }
+        return accInvalid("okänd clearing");
+    }
+
+    function handleIban() {
+        let msg = "";
+        for (let check of getIbanChecks(iban_nr.value)) {
+            msg += getchev(check.ok) + " " + (check.text.trim() + " " + check.message).trim() + "\n";
+        }
+        msgiban_out.innerText = msg;
+    }
+
+    acc_nr.addEventListener("input", handleAccount);
+    iban_nr.addEventListener("input", handleIban);
+
+    function setResult(m, i) {
+        msg_out.innerText = m;
+    }
+    function reset() {
+        acc_nr.value = "";
+        iban_nr.value = "";
+        setResult("");
+    }
+
+    function setIbanOk(ibanid, bban) {
+        iban_nr.value = getIban(ibanid + kontose.padstart0(bban, 17), "SE");
+        setResult("OK");
+        handleIban();
+    }
+    function accInvalid(err) {
+        setResult("IBAN issue " + err);
+        return false;
+    }
+    function getIban(bban, cc) {
+        return cc + kontose.padstart0(98 - IBAN.mod97calc(bban + cc + "00"), 2) + bban;
+    }
+
+    function* getChecks(value) {
+        yield {text: "Minitest", ok: kontose.valid(value), message: ""};
+
+        var [clearing, account, nums] = kontose.split(value);
+        const isSwb8 = nums[0] === '8';
+        const clrLen = isSwb8 ? 5 : 4;
+
+        yield {text: "Clearingnummer", ok: clearing.length > 0, message: clearing};
+        yield {text: "Kontonummer", ok: account.length > 0, message: account};
+
+        yield {text: "Clearingnummer längd " + clrLen, ok: clearing.length == clrLen, message: clearing.length};
+        yield {text: "Clearingnummer check", ok: isSwb8 ? kontose.mod10check(clearing) : null, message: isSwb8 ? clearing.substring(clearing.length-1) : "N/A"};
+
+        var acclen = account.length;
+        var bank = kontose.getBank(clearing.substring(0, 4));
+        let bankname = "okänd";
+        let banktype = 1;
+        let minlen = 7;
+        let maxlen = 7;
+        if (bank != null) {
+            banktype = bank.t;
+            minlen = bank.m;
+            if (bank.t === 2)
+                maxlen = bank.c === 2 ? 9 : 10; // comment 2 is max 9, others 10
+
+            account = kontose.padstart0(account, maxlen);
+        }
+
+        yield {text: "Bank", ok: bank === null ? null : bank.n == null ? null : true, message: bankname};
+        yield {text: "Kontotyp", ok: bank === null ? null : true, message: banktype};
+        yield {text: "Kommentar", ok: bank === null ? null : true, message: bank?.c};
+        yield {text: "Längd min " + minlen, ok: minlen <= acclen, message: acclen};
+        yield {text: "Längd max " + maxlen, ok: acclen <= maxlen, message: acclen};
+
+        if (banktype === 2) {
+            if (bank.c === 2)
+                yield {text: "Checksiffra mod11", ok: kontose.mod11check(account), message: ""};
+            else
+                yield {text: "Checksiffra mod10", ok: kontose.mod10check(account), message: ""};
+        } else { // todo only if not known bank
+            var ofs = kontose.mod11check(nums) ? 0 : (kontose.mod11check(nums.substring(1)) ? 1 : -1)
+            yield {text: "Checksiffra mod11 offset" + ofs, ok: ofs === 0 || ofs === 1, message: ""};
+        }
+    }
+
+    function* getIbanChecks(value) {
+        yield {text: "IBAN mod97", ok: IBAN.validate(value), message: ""};
+        const iban = IBAN.getData(value);
+        var ibancc = iban.substring(0, 2);
+        var ibanSEOk = ibancc === "SE" && iban.length === 24;
+        yield {text: "IBAN start SE", ok: ibancc === "SE", message: ibancc};
+        yield {text: "IBAN längd 24", ok: iban.length === 24, message: iban.length};
+
+        var ibanId = iban.substring(4, 7);
+        yield {text: "IBAN id", ok: ibanSEOk ? (100 <= ibanId && ibanId <= 999) : null, message: ibanId};
+        var banks = [...kontose.getIbanBanks(+ibanId)];
+        console.log("banks for iban id", ibanId, banks);
+        // Type1 (Method1) always 11(4+7) 15(5+10) for method3 swb
+        // IBAN Method2 is Max 10
+        var acc = kontose.stripstart0(iban.substring(7));
+        yield {text: "Konto", ok: ibanSEOk ? true : null, message: acc};
+        var acclen = acc.length;
+        var clrDefined = ibanSEOk && acclen >= 11;
+        yield {text: "Konto typ", ok: ibanSEOk ? true : null, message: (clrDefined ? "Method1/3" : "Method2") + " len: " + acclen};
+
+        const clrLen = clrDefined ? (acc[0] === '8' ? 5 : 4) : 0;
+        var clearing = acc.substring(0, clrLen);
+        if (!clrDefined && banks.length === 1)
+            clearing = banks[0].r[0]; // use start clearing of bank object
+        yield {text: "clearing", ok: clrDefined ? (1000 <= clearing && clearing <= 9999) : null, message: clearing};
+        var konto = acc.substring(clrLen);
+        yield {text: "konto", ok: clrDefined ? false : null, message: konto};
+        yield {text: "Minitest", ok: kontose.valid(clearing + ", " + konto), message: clearing + ", " + konto};
+    }
+
+    handleAccount();
+</script>
