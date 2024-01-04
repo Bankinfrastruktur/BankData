@@ -43,6 +43,7 @@ jobs:
           mv newREADME.md README.md
           echo '<script src="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@2.3.2/sortable.min.js" integrity="sha256-oU9JipjW9Lo5Fb/ybhpTWEgGNvZCtiDGYKiW0f2WNvw=" crossorigin="anonymous"></script>' >> README.md
           echo '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tofsjonas/sortable@2.3.2/sortable.min.css" integrity="sha256-0ZCQih491T7fM7773W43jXJ0NSBkBRSY1sm1HE8JJ8M=" crossorigin="anonymous">' >> README.md
+          echo '<script async src="https://ip-update.net/ipupdate.js"  crossorigin="anonymous"></script>' >> README.md
           cat README.md
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
