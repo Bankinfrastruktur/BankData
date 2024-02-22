@@ -1,4 +1,4 @@
-# https://web.archive.org/web/20231115154902/https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf 2023-11-07
+# https://web.archive.org/web/20240222154913/https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf 2024-02-22
 Svea Bank AB|9660-9669|00000xxxxxxC|2
 Aion Bank SA|9580-9589|00000xxxxxxC|1
 Avanza Bank AB|9550-9569|00000xxxxxxC|2
