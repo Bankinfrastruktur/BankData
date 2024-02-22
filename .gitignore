@@ -5,3 +5,13 @@ obj/
 .vs
 *_NCrunch_*
 .pdfstats
+
+node_modules/
+
+# Ignore test-related files
+coverage.data
+coverage/
+
+# Build files
+dist/
+

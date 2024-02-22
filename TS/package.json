@@ -1,0 +1,32 @@
+{
+  "name": "bankdata",
+  "version": "0.0.1",
+  "description": "Datacollection for how to validate Swedish bank accounts as well as BIC and IBAN details. Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bankinfrastruktur/BankData.git"
+  },
+  "keywords": [
+    "Bankinfrastruktur",
+    "Swedishbankers",
+    "clearingnummer",
+    "bankkonto",
+    "BIC",
+    "IBAN"
+  ],
+  "author": "Christian I. Nilsson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bankinfrastruktur/BankData/issues"
+  },
+  "homepage": "https://bankinfrastruktur.github.io/BankData/",
+  "devDependencies": {
+    "typescript": "^5.4.2"
+  }
+}
