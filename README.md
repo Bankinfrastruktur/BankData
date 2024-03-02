@@ -25,7 +25,7 @@ Mer information om uppdateringen finns i [disukssion](https://github.com/jop-io/
 ### Sparbanken Syd 9570-9579  
 Använder endast 9570
 
-# Lista på Clearingnummer och banker
+# Lista på Clearingnummer, banker, IBAN, BIC och methoder
 <!-- kontotable.html -->
 <table class="sortable"><thead>
 <tr><th>Start</th><th>Slut</th><th>IBAN ID</th><th>BIC</th><th>Bank</th><th>Typ</th><th>Kommentar</th><th>IBAN Metod</th><th>Min</th><th>Längd</th></tr>
