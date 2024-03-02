@@ -4,7 +4,10 @@ namespace Bankinfrastruktur.Helpers;
 
 public static class DocumentHelpers
 {
-    public static readonly HttpClient HttpClient = new();
+    public static readonly HttpClient HttpClient = new()
+    {
+        Timeout = TimeSpan.FromMinutes(5),
+    };
 
     public static async Task<string> GetSha1Base32Async(this Stream s)
     {

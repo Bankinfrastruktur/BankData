@@ -8,6 +8,7 @@ public class WaybackSnapshot
     private const string ArchiveBase = "https://web.archive.org/";
     public static async Task RequestSaveAsync(Uri url)
     {
+        Console.WriteLine($"WaybackSnapshot Request Save: {url}");
         var resp = await HttpClient.GetAsync(new Uri($"{ArchiveBase}save/{url}"));
 #if DEBUG
         foreach (var hdr in resp.Headers)
