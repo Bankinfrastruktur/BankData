@@ -2,7 +2,10 @@
   "name": "bankdata",
   "version": "0.0.1",
   "description": "Datacollection for how to validate Swedish bank accounts as well as BIC and IBAN details. Sammanställning av data i maskinläsbart format från Bankgirot och Bankinfrastruktur (BSAB)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "files": [
