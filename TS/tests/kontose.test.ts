@@ -1,7 +1,11 @@
 import { kontose_mini, kontosehelpers } from '../bankdata_mini';
+import { kontose } from '../bankdata_full';
+console.log(kontose_mini.banks);
+console.log(kontose.banks);
 
 test('banks array lengths', () => {
   expect(kontose_mini.banks).toHaveLength(9);
+  expect(kontose.banks.length).toBeGreaterThan(10);
 });
 
 
