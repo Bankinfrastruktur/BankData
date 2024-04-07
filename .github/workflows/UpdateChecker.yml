@@ -63,7 +63,7 @@ jobs:
           git add README.md
       - name: Set up Python
         if: steps.update-checker.outputs.newdata == 'true'
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
           cache: 'pip'
