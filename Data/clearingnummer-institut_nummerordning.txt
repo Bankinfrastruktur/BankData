@@ -1,4 +1,4 @@
-# https://web.archive.org/web/20240705194536/https://www.bankinfrastruktur.se/media/23agumes/1906_clearingnummer-institut-230808_-nummerordning.docx
+# https://web.archive.org/web/20250223000449/https://www.bankinfrastruktur.se/media/fbxbfgxc/1906_clearingnummer-institut-240819_nummerordning.docx
 |CLEARINGNUMMER
 Sveriges Riksbank|1000-10991
 Nordea|1100-1199
@@ -42,10 +42,10 @@ Sparbanken Syd|9570-9579
 AION Bank|9580-9589
 Erik Penser Bank AB|9590-9599
 Banking Circle|9600-9609
-Volvofinans Bank|9610-9619
+Ziklo Bank (fd. Volvofinans Bank)|9610-9619
 Bank of China (Luxembourg)|9620-9629
 Lån & Spar Bank|9630-9639
-NOBA Bank (fd. Nordax Bank)|9640-9649
+NOBA Bank (fd. Nordax bank)|9640-9649
 MedMera Bank|9650-9659
 Svea Bank|9660-9669
 JAK Medlemsbank|9670-9679
