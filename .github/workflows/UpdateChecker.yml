@@ -57,7 +57,7 @@ jobs:
       - name: Run Update Checker ${{ github.server_url }}/${{ env.actionpath }}
         id: update-checker
         run: |
-          ./NET/UpdateChecker/bin/Release/net6.0/UpdateChecker || (ls -lh; find .; exit 1)
+          ./NET/UpdateChecker/bin/Release/net8.0/UpdateChecker || (ls -lh; find .; exit 1)
           [ -f "$IssueTemplate" ] && cat $IssueTemplate && echo newdata=true >> "$GITHUB_OUTPUT" || echo No $IssueTemplate found
           bash Data/Tools/update-readme-with-konto.sh
           git add README.md
