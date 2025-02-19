@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import camelot
-import PyPDF2
+import pypdfium2 as pdfium
 import regex as re
 
 def fixfield(v):
@@ -34,12 +34,10 @@ def strrow(row):
 
 def parsebankgirot(file, url, archivedate):
     # extract document date, often delay between document and release
-    pdfdate = ""
-    with open(file, "rb") as pdf_file:
-        pdfread = PyPDF2.PdfFileReader(pdf_file)
-        pagetext = pdfread.pages[0].extractText()
-        m = re.search(r"(20[0-9]{2}-[0-1][0-9]-[0-3][0-9])", pagetext)
-        pdfdate = m.group(0)
+    pdf = pdfium.PdfDocument(file)
+    pagetext = pdf[0].get_textpage().get_text_bounded()
+    m = re.search(r"(20[0-9]{2}-[0-1][0-9]-[0-3][0-9])", pagetext)
+    pdfdate = m.group(0)
     yield f"# {url} {pdfdate}"
 
     tables = camelot.read_pdf(file, pages="all")

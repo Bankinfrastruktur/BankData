@@ -1,4 +1,3 @@
 regex
-PyPDF2<3.0
+Pillow
 camelot-py[base]
-opencv-python
