@@ -15,6 +15,8 @@ public static class DocumentHelpers
         return Base32.FromBytes(await SHA1.Create().ComputeHashAsync(s));
     }
 
+    public static Task<string> GetSha1Base32Async(this BinaryData data) => data.ToStream().GetSha1Base32Async();
+
     public static async Task<string?> GetFileSha1Base32Async(this FileInfo fi)
     {
         if (!fi.Exists)
@@ -24,18 +26,14 @@ public static class DocumentHelpers
         return await fs.GetSha1Base32Async();
     }
 
-    public static async Task<MemoryStream> FetchToMemoryAsync(Uri url)
+    public static async Task<BinaryData> FetchToMemoryAsync(Uri url)
     {
         using var s = await HttpClient.GetStreamAsync(url);
-        var ms = new MemoryStream();
-        await s.CopyToAsync(ms);
-        ms.Position = 0;
-        return ms;
+        return await BinaryData.FromStreamAsync(s);
     }
 
-    public static async Task<IList<Uri>> GetDocumentUrisFromPage(Uri page) =>
-        GetDocumentUris(await HttpClient.GetStringAsync(page))
-        .Select(t => new Uri(page, t)).ToList();
+    public static IList<Uri> GetDocumentUrisFromPage(BinaryData docData, Uri page) =>
+        [.. GetDocumentUris(docData.ToString()).Select(t => new Uri(page, t))];
 
     public static IList<string> GetDocumentUris(ReadOnlySpan<char> html)
     {

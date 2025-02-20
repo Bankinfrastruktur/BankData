@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.20.0" />
+    <PackageReference Include="System.Memory.Data" Version="9.0.2" />
   </ItemGroup>
   
 </Project>

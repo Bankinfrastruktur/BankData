@@ -13,9 +13,9 @@ var oldFilesToRemove = originalFiles.ToDictionary(fi => Path.GetFileName(fi.Name
 var filesWithHash = originalFiles.AsParallel().ToDictionary(fi => fi, DocumentHelpers.GetFileSha1Base32Async);
 foreach (var fwh in filesWithHash)
 {
-    var digest = await fwh.Value.ConfigureAwait(false);
+    var digest = await fwh.Value;
     var fi = fwh.Key;
-    Console.WriteLine($"* Existing local file: {Path.GetFileName(fi.Name)}\t{fi.Length}\t{digest}");
+    Console.WriteLine($" * Existing local file: {Path.GetFileName(fi.Name)}\t{fi.Length}\t{digest}");
 }
 
 var modifiedDocuments = new List<UpdateChecker.GrabAndDownload.Document>();
@@ -25,7 +25,7 @@ if (true)
 {
     foreach (var doc in documents)
     {
-        var file = Path.GetFileName(doc.Url.LocalPath);
+        var file = doc.LocalName;
         oldFilesToRemove.Remove(file);
         Console.Write($"\n Validating {doc}");
         var fileFullPath = Path.Combine(diDocCache.FullName, file);
@@ -33,6 +33,7 @@ if (true)
         if (doc.ArchiveMetadata?.Mimetype == WaybackSnapshot.MimeApplicationPdf)
             pdfDocs.Add((doc, fi));
 
+        var parsedData = DocumentExtractor.GetData(doc);
         var fileSha1 = await fi.GetFileSha1Base32Async();
         if (doc.Sha1 != fileSha1)
         {
@@ -43,7 +44,7 @@ if (true)
             modifiedDocuments.Add(doc);
             using (var fs = fi.OpenWrite())
             {
-                doc.Data.WriteTo(fs);
+                await fs.WriteAsync(doc.Data.ToMemory());
                 fs.SetLength(doc.Data.Length); // ensure existing files are truncated to correct size
                 await fs.FlushAsync();
                 fs.Close();
@@ -54,7 +55,6 @@ if (true)
             if (fileSha1 != doc.Sha1)
                 throw new Exception($"* {fi.FullName} On-disk hash was {fileSha1} expected {doc.Sha1}, size: {fi.Length} expected {doc.Data.Length}");
 
-            var parsedData = DocumentExtractor.GetData(doc.Url, doc.Data);
             if (ghStepSummaryFile is not null && parsedData is not null)
                 await File.AppendAllTextAsync(ghStepSummaryFile, $"Data: {parsedData}\n");
         }

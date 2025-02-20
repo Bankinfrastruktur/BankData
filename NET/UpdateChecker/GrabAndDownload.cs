@@ -12,20 +12,13 @@ public static class GrabAndDownload
             GetPage(new Uri("https://www.swedishbankers.se/fraagor-vi-arbetar-med/finansiell-infrastruktur/dataclearingen/"), false));
     }
 
-    public class Document
+    public class Document(Uri uri, BinaryData data, string srcSha1, WaybackSnapshot? archiveMetadata, string? localName = null)
     {
-        public Uri Url { get; private set; }
-        public MemoryStream Data { get; private set; }
-        public string Sha1 { get; private set; }
-        public WaybackSnapshot? ArchiveMetadata { get; internal set; }
-
-        public Document(Uri uri, MemoryStream data, string srcSha1, WaybackSnapshot? archiveMetadata)
-        {
-            Url = uri;
-            Data = data;
-            Sha1 = srcSha1;
-            ArchiveMetadata = archiveMetadata;
-        }
+        public string LocalName => localName ?? Path.GetFileName(Url.LocalPath);
+        public Uri Url { get; } = uri;
+        public BinaryData Data { get; } = data;
+        public string Sha1 { get; } = srcSha1;
+        public WaybackSnapshot? ArchiveMetadata { get; internal set; } = archiveMetadata;
 
         public Uri UrlPreferArchive => ArchiveMetadata?.Digest == Sha1 ? ArchiveMetadata.ShowUrl : Url;
 
@@ -34,7 +27,7 @@ public static class GrabAndDownload
 
     public class Page
     {
-        public List<Document> Documents { get; } = new();
+        public List<Document> Documents { get; } = [];
     }
 
     private static async Task<Page> GetPage(Uri url, bool ensureBankgirot)
@@ -43,8 +36,8 @@ public static class GrabAndDownload
         WaybackSnapshot? lastSnap = null;
         // collect documents linked from page
         var pageArchiveMetadataTask = WaybackSnapshot.GetArchiveDataNoExceptions(url, filterMime: null);
-
-        var documentUrls = (await DocumentHelpers.GetDocumentUrisFromPage(url)).ToHashSet();
+        var pageData = await DocumentHelpers.FetchToMemoryAsync(url);
+        var documentUrls = DocumentHelpers.GetDocumentUrisFromPage(pageData, url).ToHashSet();
         if (ensureBankgirot)
             documentUrls.Add(new Uri("https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf"));
         var page = new Page();
@@ -55,11 +48,11 @@ public static class GrabAndDownload
                 WaybackSnapshot.MimeApplicationPdf;
             var archiveMetadataTask = WaybackSnapshot.GetArchiveDataNoExceptions(u, mime);
             var srcDataTask = DocumentHelpers.FetchToMemoryAsync(u);
-            var archiveMetadata = await archiveMetadataTask.ConfigureAwait(false);
+            var archiveMetadata = await archiveMetadataTask;
             if (lastSnap is null ||
                 archiveMetadata?.Timestamp > lastSnap.Timestamp) lastSnap = archiveMetadata;
 
-            var srcData = await srcDataTask.ConfigureAwait(false);
+            var srcData = await srcDataTask;
             var srcSha1 = await srcData.GetSha1Base32Async();
             var doc = new Document(u, srcData, srcSha1, archiveMetadata);
             page.Documents.Add(doc);
@@ -67,14 +60,19 @@ public static class GrabAndDownload
             if (archiveMetadata is null ||
                 srcSha1 == archiveMetadata.Digest) continue;
             Console.WriteLine($"{u} new: {srcSha1} archived {archiveMetadata.Digest}");
-            await WaybackSnapshot.RequestSaveAsync(u).ConfigureAwait(false);
+            await WaybackSnapshot.RequestSaveAsync(u);
             doc.ArchiveMetadata = await WaybackSnapshot.GetArchiveDataNoExceptions(u, mime);
         }
 
         var pageArchiveMetadata = await pageArchiveMetadataTask;
-        if (pageArchiveMetadata != null)
+        var pageSha1 = await pageData.GetSha1Base32Async();
+        if (pageArchiveMetadata is null)
         {
-            Console.WriteLine($" * maindl? {pageArchiveMetadata}\n * cmp ts  {lastSnap}");
+            Console.WriteLine($" * maindl new {url}\n ** Downloaded {pageSha1} {pageData.Length}");
+        }
+        else
+        {
+            Console.WriteLine($" * maindl  {pageArchiveMetadata}\n ** Downloaded {pageSha1} {pageData.Length}\n ** cmp ts {lastSnap?.Timestamp} {lastSnap?.Url}");
             if (lastSnap is not null && pageArchiveMetadata?.Timestamp < lastSnap.Timestamp.AddDays(-10))
                 await WaybackSnapshot.RequestSaveAsync(url);
         }

@@ -52,11 +52,11 @@ public static class DocumentExtractor
         return sb.Length == 0 ? null : sb.ToString();
     }
 
-    public static string? GetData(Uri url, Stream data)
+    public static string? GetData(UpdateChecker.GrabAndDownload.Document doc)
     {
-        if (url.LocalPath.EndsWith(".docx"))
+        if (doc.LocalName.EndsWith(".docx"))
         {
-            return ParseDocx(data);
+            return ParseDocx(doc.Data.ToStream());
         }
         return null;
     }
