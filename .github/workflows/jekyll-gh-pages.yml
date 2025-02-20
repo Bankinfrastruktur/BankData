@@ -35,7 +35,7 @@ jobs:
           bash Data/Tools/update-readme-with-konto.sh
           echo "---" > newREADME.md
           echo "title: Bankinfrastruktur Information om IBAN, Clearingnummer och kontonummer" >> newREADME.md
-          echo "description: Sammanställd information om svenska bankkonto nummer och konvertering till IBAN" >> newREADME.md
+          echo "description: SammanstÃ¤lld information om svenska bankkonto nummer och konvertering till IBAN" >> newREADME.md
           echo "permalink: /index.html" >> newREADME.md
           echo "remote_theme: jekyll/minima" >> newREADME.md
           echo "---" >> newREADME.md
@@ -53,7 +53,24 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
 
-  # Deployment job
+  # NPM build & publish job
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./TS
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # GH Pages deployment job
   deploy:
     environment:
       name: github-pages
