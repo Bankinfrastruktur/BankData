@@ -23,8 +23,9 @@ var documents = (await pagesTask).SelectMany(p => p.Documents);
 var pdfDocs = new List<(UpdateChecker.GrabAndDownload.Document, FileInfo)>();
 if (true)
 {
-    foreach (var doc in documents)
+    foreach (var odoc in documents)
     {
+        var doc = odoc;
         var file = doc.LocalName;
         oldFilesToRemove.Remove(file);
         Console.Write($"\n Validating {doc}");
@@ -32,12 +33,18 @@ if (true)
         if (doc.ArchiveMetadata?.Mimetype == WaybackSnapshot.MimeApplicationPdf)
             pdfDocs.Add((doc, fi));
 
+        doc = await DocumentExtractor.RepetableRequestHtmlDocument(doc);
         var parsedData = DocumentExtractor.GetData(doc);
         var fileSha1 = await fi.GetFileSha1Base32Async();
         if (doc.Sha1 != fileSha1)
         {
             var logline = $"* from: {fileSha1} -> {doc.Sha1} to {fi.FullName}";
             Console.WriteLine(logline);
+            if (!doc.DidWaybackSaveCall)
+            {
+                await WaybackSnapshot.RequestSaveAsync(doc.Url);
+                doc.DidWaybackSaveCall = true;
+            }
             if (ghStepSummaryFile is not null)
                 await File.AppendAllTextAsync(ghStepSummaryFile, $"{logline} src: {doc}\n");
             modifiedDocuments.Add(doc);

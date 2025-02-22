@@ -5,7 +5,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace Bankinfrastruktur.Helpers;
 
-public static class DocumentExtractor
+public static partial class DocumentExtractor
 {
     private static IEnumerable<OpenXmlElement> FilterTextElements(OpenXmlElement element)
     {
@@ -60,4 +60,22 @@ public static class DocumentExtractor
         }
         return null;
     }
+
+    /// <summary>Modify parts of data that changes on each request to check for actual data changes</summary>
+    public static async Task<UpdateChecker.GrabAndDownload.Document> RepetableRequestHtmlDocument(UpdateChecker.GrabAndDownload.Document doc)
+    {
+        if (doc.ArchiveMetadata?.Mimetype != "text/html")
+            return doc;
+        var data = doc.Data.ToString();
+        if (data.Contains("nonce="))
+        {
+            data = RegexNonceAttribute().Replace(data, "");
+        }
+        var ddata = new BinaryData(data);
+        return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, doc.LocalName);
+    }
+
+    // nonce="DuWld9YQzgA3bRBy/oCVWgk9rQ4MEmOk5Ya2T9RttMs="
+    [System.Text.RegularExpressions.GeneratedRegex(" nonce=\"([^\"]{1,64})\"")]
+    private static partial System.Text.RegularExpressions.Regex RegexNonceAttribute();
 }
