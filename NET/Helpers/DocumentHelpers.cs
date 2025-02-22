@@ -26,6 +26,16 @@ public static class DocumentHelpers
         return await fs.GetSha1Base32Async();
     }
 
+    public static async Task WriteAsync(this BinaryData data, FileInfo fi)
+    {
+        using var fs = fi.OpenWrite();
+        await fs.WriteAsync(data.ToMemory());
+        fs.SetLength(data.Length); // ensure existing files are truncated to correct size
+        await fs.FlushAsync();
+        fs.Close();
+        fi.Refresh();
+    }
+
     public static async Task<BinaryData> FetchToMemoryAsync(Uri url)
     {
         using var s = await HttpClient.GetStreamAsync(url);

@@ -28,8 +28,7 @@ if (true)
         var file = doc.LocalName;
         oldFilesToRemove.Remove(file);
         Console.Write($"\n Validating {doc}");
-        var fileFullPath = Path.Combine(diDocCache.FullName, file);
-        var fi = new FileInfo(fileFullPath);
+        var fi = new FileInfo(Path.Combine(diDocCache.FullName, file));
         if (doc.ArchiveMetadata?.Mimetype == WaybackSnapshot.MimeApplicationPdf)
             pdfDocs.Add((doc, fi));
 
@@ -42,15 +41,7 @@ if (true)
             if (ghStepSummaryFile is not null)
                 await File.AppendAllTextAsync(ghStepSummaryFile, $"{logline} src: {doc}\n");
             modifiedDocuments.Add(doc);
-            using (var fs = fi.OpenWrite())
-            {
-                await fs.WriteAsync(doc.Data.ToMemory());
-                fs.SetLength(doc.Data.Length); // ensure existing files are truncated to correct size
-                await fs.FlushAsync();
-                fs.Close();
-            }
-
-            fi.Refresh();
+            await doc.Data.WriteAsync(fi);
             fileSha1 = await fi.GetFileSha1Base32Async();
             if (fileSha1 != doc.Sha1)
                 throw new Exception($"* {fi.FullName} On-disk hash was {fileSha1} expected {doc.Sha1}, size: {fi.Length} expected {doc.Data.Length}");
