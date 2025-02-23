@@ -4,7 +4,18 @@ using Bankinfrastruktur.Helpers;
 Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("sv-SE");
 
 var diDocCache = Directory.CreateDirectory(".doc_cache");
-Console.WriteLine($"Working with {diDocCache.FullName} ...");
+var diData = new DirectoryInfo(Directory.GetCurrentDirectory());
+while (true)
+{
+    var di = diData.EnumerateDirectories("Data").FirstOrDefault();
+    if (di is not null)
+    {
+        diData = di;
+        break;
+    }
+    diData = diData.Parent ?? throw new Exception("Data spath not found");
+}
+Console.WriteLine($"Working with {diDocCache.FullName} and {diData.FullName} ...");
 var ghStepSummaryFile = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
 
 var pagesTask = UpdateChecker.GrabAndDownload.GetPages();
@@ -34,7 +45,16 @@ if (true)
             pdfDocs.Add((doc, fi));
 
         doc = await DocumentExtractor.RepetableRequestHtmlDocument(doc);
-        var parsedData = DocumentExtractor.GetData(doc);
+        await foreach (var dataDoc in DocumentExtractor.GetDataDocuments(doc))
+        {
+            var fiParsed = new FileInfo(Path.Combine(diData.FullName, dataDoc.LocalName));
+            var fiParsedSha1 = await fiParsed.GetFileSha1Base32Async();
+            if (dataDoc.Sha1 != fiParsedSha1)
+            {
+                await dataDoc.Data.WriteAsync(fiParsed);
+            }
+        }
+
         var fileSha1 = await fi.GetFileSha1Base32Async();
         if (doc.Sha1 != fileSha1)
         {
@@ -52,9 +72,6 @@ if (true)
             fileSha1 = await fi.GetFileSha1Base32Async();
             if (fileSha1 != doc.Sha1)
                 throw new Exception($"* {fi.FullName} On-disk hash was {fileSha1} expected {doc.Sha1}, size: {fi.Length} expected {doc.Data.Length}");
-
-            if (ghStepSummaryFile is not null && parsedData is not null)
-                await File.AppendAllTextAsync(ghStepSummaryFile, $"Data: {parsedData}\n");
         }
     }
 }

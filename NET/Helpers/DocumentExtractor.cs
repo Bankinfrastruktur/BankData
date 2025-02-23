@@ -52,13 +52,33 @@ public static partial class DocumentExtractor
         return sb.Length == 0 ? null : sb.ToString();
     }
 
-    public static string? GetData(UpdateChecker.GrabAndDownload.Document doc)
+    public static async IAsyncEnumerable<UpdateChecker.GrabAndDownload.Document> GetDataDocuments(UpdateChecker.GrabAndDownload.Document doc)
     {
         if (doc.LocalName.EndsWith(".docx"))
         {
-            return ParseDocx(doc.Data.ToStream());
+            var localName = doc.LocalName;
+            if (doc.LocalName.Contains("_bokstavsordning."))
+            {
+                // 1906_clearingnummer-institut-241202_bokstavsordning.docx
+                localName = "clearingnummer-institut_bokstavsordning.txt";
+            }
+            else if (doc.LocalName.Contains("_nummerordning."))
+            {
+                // 1906_clearingnummer-institut-241202_nummerordning.docx
+                localName = "clearingnummer-institut_nummerordning.txt";
+            }
+            else
+            {
+                yield break;
+            }
+
+            var data = ParseDocx(doc.Data.ToStream());
+            if (data is not null)
+            {
+                var ddata = new BinaryData($"# {doc.UrlPreferArchive}\n{data}");
+                yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+            }
         }
-        return null;
     }
 
     /// <summary>Modify parts of data that changes on each request to check for actual data changes</summary>
