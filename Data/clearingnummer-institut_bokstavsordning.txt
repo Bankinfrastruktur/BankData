@@ -1,0 +1,68 @@
+# https://www.bankinfrastruktur.se/media/2ahg1xfm/1906_clearingnummer-institut-241202_bokstavsordning.docx
+|CLEARINGNUMMER
+AION Bank|9580-9589
+Avanza Bank|9550-9569
+Bank of China (Luxembourg)|9620-9629
+Bankernas Automatbolag|9952
+Banking Circle|9600-9609
+BNP Paribas|9470-9479
+Brite AB|9490-9499
+Citibank|9040-9049
+Crédit Agricole Corporate|9080-9089|
+Danske Bank|1200-1399
+Danske Bank|2400-2499
+Danske Bank|9180-9189
+DNB Bank|9190-9199
+DNB Bank|9260-9269
+Ekobanken|9700-9709
+Enity Bank Group (f.d. Bluestep Finans)|9680-9689
+Folkia|9690-9699
+Forex Bank|9400-9449|
+Intergiro|9770-9779
+Handelsbanken|6000-6999
+ICA Banken|9270-9279
+IKANO Bank|9170-9179
+JAK Medlemsbank|9670-9679
+Juni Technology AB|2110-2119
+Klarna Bank|9780-9789
+Kommuninvest|9955
+Kortaccept Nordic|9954
+Landshypotek|9390-9399
+Lån & Spar Bank|9630-9639
+Länsförsäkringar Bank|3400-3409
+Länsförsäkringar Bank|9020-9029
+Länsförsäkringar Bank|    9060-9069
+Marginalen Bank|9230-9239
+MedMera Bank|9650-9659
+Multitude Bank (fd. Ferratum Bank) |9070-9079
+Nasdaq-OMX|9870-9879
+NOBA Bank (fd. Nordax bank)|9640-9649
+Nordea|1100-1199
+Nordea|1400-2099
+Nordea|3000-3399
+Nordea|3410-4999
+Nordea|9500-9549
+Nordea|9960-9969
+Nordnet Bank|9100-9109
+Northmill Bank|9750-9759
+Pareto Securities AB|9380-9389
+Privatgirot|9860-9869
+Resurs Bank|9280-9289
+Riksgälden|9880-9899
+Santander Consumer Bank|9460-9469
+SBAB Bank|9250-9259
+SEB|5000-5999
+SEB|9120-9124
+SEB|9130-9149
+Skandiabanken|9150-9169
+Sparbanken Syd|9570-9579
+Steven AB|2120-2129
+Svea Bank|9660-9669
+Sveriges Riksbank|1000-1099
+Swedbank|7000-8999
+Swedbank|9300-9349
+Teller Branch Norway|9951
+Teller Bransch Sweden|9953
+VP Securities A/S|9956
+Ziklo Bank (fd.Volvofinans Bank)|9610-9619
+Ålandsbanken|2300-2399

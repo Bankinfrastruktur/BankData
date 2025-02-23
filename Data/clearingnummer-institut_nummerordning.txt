@@ -1,9 +1,11 @@
-# https://web.archive.org/web/20250223000449/https://www.bankinfrastruktur.se/media/fbxbfgxc/1906_clearingnummer-institut-240819_nummerordning.docx
+# https://web.archive.org/web/20250130152754/https://www.bankinfrastruktur.se/media/hbolx0kb/1906_clearingnummer-institut-241202_nummerordning.docx
 |CLEARINGNUMMER
 Sveriges Riksbank|1000-10991
 Nordea|1100-1199
 Danske Bank|1200-1399
 Nordea|1400-2099
+Juni Technology AB|2110-2119
+Steven AB|2120-2129
 Ålandsbanken|2300-2399
 Danske Bank|2400-2499
 Nordea|3000-3399
@@ -35,12 +37,11 @@ Landshypotek|9390-9399
 Forex Bank|9400-9449
 Santander Consumer Bank|9460-9469
 BNP Paribas|9470-9479
-Brite AB|9490-9499
 Nordea|9500-9549
 Avanza Bank|9550-9569
 Sparbanken Syd|9570-9579
 AION Bank|9580-9589
-Erik Penser Bank AB|9590-9599
+EP Bank (fd. Erik Penser Bank AB)|9590-9599
 Banking Circle|9600-9609
 Ziklo Bank (fd. Volvofinans Bank)|9610-9619
 Bank of China (Luxembourg)|9620-9629
@@ -49,11 +50,10 @@ NOBA Bank (fd. Nordax bank)|9640-9649
 MedMera Bank|9650-9659
 Svea Bank|9660-9669
 JAK Medlemsbank|9670-9679
-Bluestep Finans|9680-9689
+Enity Bank Group (f.d. Bluestep Finans)|9680-9689
 Folkia|9690-9699
 Ekobanken|9700-9709
 Lunar Bank|9710-9719
-Northmill Bank|9750-9759 
 Intergiro|9770-9779
 Klarna Bank|9780-9789
 Privatgirot|9860-9869
