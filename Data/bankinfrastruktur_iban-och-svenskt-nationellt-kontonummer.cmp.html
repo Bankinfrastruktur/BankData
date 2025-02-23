@@ -1,0 +1,235 @@
+# https://web.archive.org/web/20250222183840/https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer
+<article class="Article">
+    <h1 class="Article-heading">
+        Beskrivning av svenskt nationellt kontonummer, dess kontotyper samt konverteringsmetod till IBAN
+    </h1>
+    <p class="Article-intro">
+        
+    </p>
+    <div class="Article-body">
+        
+<h3>1. Inledning och syfte</h3>
+<p>Syftet med informationen nedan är att ge en beskrivning över hur ett svenskt nationellt kontonummer (dvs. kontonummer uttryckt i clearingnummer + räkningsnummer) är uppbyggda samt hur de kan omvandlas/konverteras till det internationella formatet IBAN (engelska: International Bank Account Number, IBAN). Det sistnämnda är en viktig aspekt eftersom de nya svenska betalinfrastrukturerna endast tillåter kontoformatet IBAN i interbankledet. Dessutom kan banker vid initiering via fil eller API av betaltypen kontoöverföring (t.ex. löner) ha som krav på bankkunden eller dennes leverantör att kontot ska anges i formatet IBAN.</p>
+<p>I punkt 4 nedan finns en sammanställning över dagens clearingnummer där det framgår för respektive clearingnummer vem som är innehavare (Aktör) samt uppgifter om kontotyp, IBAN ID och konverteringsmetod.</p>
+<h3>2. Svenskt nationellt kontonummer och aktiva kontotyper</h3>
+<p>Ett svenskt bankkontonummer består av ett clearingnummer (fyra siffror) och ett räkningsnummer (som i sin grund ska vara 12 tecken inkl. s.k. checksiffra). Detta ”format”, clearingnummer + räkningsnummer, definieras som ett svenskt nationellt kontonummer.</p>
+<p>Ett svenskt nationellt kontonummer kan vara uppbyggt på olika sätt och det som avgör hur är vilken kontotyp innehavaren (oftast en bank) av ett clearingnummer har valt från början och som därefter gäller för det specifika kontonumret. På den svenska marknaden finns det idag sex existerande kontotyper, en aktör som tilldelas nya clearingnummer kan endast välja på tre av dessa. Kontotypen är den styrande parametern för antalet siffror som räkningsnumret ska ha samt hur dessa siffror ska valideras. Kontotypen är även den styrande parametern för hur ett svenskt bankkontonummer ska konverteras till ett svenskt IBAN.</p>
+<h4><strong>Existerande och aktiva kontotyper</strong></h4>
+<p>På den svenska bankmarknaden delas kontotyperna in i två typklasser som i sin tur har olika varianter. Typ 1 har två varianter och Typ 2 har fyra varianter, m.a.o. finns det sex olika kontotyper och de skiljer sig mellan varandra när det gäller antal tecken i räkningsnumret (nollutfyllnad tillämpas för att komma upp till 12 tecken i räkningsnumret) och/eller hur kontonumret ska valideras (dvs. hur beräkning av checksiffran ska göras).</p>
+<p>Vid tilldelning av clearingnummer (administreras och hanteras av Bankinfrastruktur i Sverige AB. Nedan kallat BSAB) så skall aktören som tilldelats clearingnummer meddela BSAB vilken kontotyp aktören avser att använda vid skapandet av kontonummer. Aktören kan sedan oktober 2024 endast välja mellan tre olika kontotyper, endera väljer aktören någon av Typ 1 varianterna (2 finns) eller så väljer aktören Typ 2 variant 4.</p>
+<p>För en tabell över vilken kontotyp som olika aktörer på svensk marknad tillämpar på sina respektive clearingnummer, se punkt 4 nedan.</p>
+<p><strong>Beskrivning av resp. kontotyp:</strong><br />Teckenförklaring format för räkningsnummer:</p>
+<ul>
+<li>0 = Siffran 0 (noll)</li>
+<li>x = Siffror 0–9</li>
+<li>C = Kontrollsiffra</li>
+</ul>
+<h4><strong>TYP 1 – grundregler</strong></h4>
+<p>Format för räkningsnummer (exkl. clearingnummer) – 00000xxxxxxC11</p>
+<ul>
+<li>Clearingnumret ingår i kontonumret</li>
+<li>Kontonumret består av totalt 11 siffror – clearingnummer fyra siffror plus räkningsnummer sju siffror inklusive kontrollsiffran (C)</li>
+<li>Kontrollsiffra beräknas/vägs enligt 11-modul med vikterna 1, 10, 9, 8 7, 6, 5, 4, 3, 2, 1</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 1 Variant 1:</strong></span></p>
+<ul>
+<li>Vägning sker av clearingnummer utom första siffran och sju siffror av räkningsnumret.</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 1 Variant 2:</strong></span></p>
+<ul>
+<li>Vägning sker av hela clearingnumret och sju siffror av räkningsnumret.</li>
+</ul>
+<h4>TYP 2 – grundregler</h4>
+<ul>
+<li>Clearingnumret ingår inte i kontonumret.</li>
+<li>Signifikanta siffror i räkningsnummerfältet anger kontonummer.</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 2 Variant 1:</strong></span> <br />Format för räkningsnummer (exkl. clearingnummer) – 00xxxxxxxxxC10</p>
+<ul>
+<li>Kontonumret består av 10 siffror.</li>
+<li>Vägning sker enligt 10-modul på 10 sista siffrorna, enligt format för räkningsnummer (exkl. clearingnummer).</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 2 Variant 2:</strong></span> <br />Format för räkningsnummer (exkl. clearingnummer) – 000xxxxxxxxC11</p>
+<ul>
+<li>Räkningsnumret består av 9 siffror.</li>
+<li>Vägning sker enligt 11-modul på 9 siffror, enligt format för räkningsnummer (exkl. clearingnummer).</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 2 Variant 3:</strong></span> <br />Format för räkningsnummer (exkl. clearingnummer) – 00xxxxxxxxxC10</p>
+<ul>
+<li>Räkningsnumret består av upp till 10 siffror.</li>
+<li>Vägning sker som regel enligt 10-modul på de sista 10 siffrorna, enligt format för räkningsnummer (exkl. clearingnummer).</li>
+</ul>
+<p><span style="text-decoration: underline;"><strong>TYP 2 Variant 4:</strong></span> <br />Format för räkningsnummer (exkl. clearingnummer) – 00xxxxxxxxxC11</p>
+<ul>
+<li>Räkningsnumret består av upp till 10 siffror.</li>
+<li>Vägning sker enligt 11-modul på de 10 siffrorna i räkningsnumret</li>
+</ul>
+<p>För ytterligare information, se Bankernas Standardlayout Flik 2 samt generell information som kan nås via länken: <a rel="noopener" href="https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf" target="_blank" title="Ladda ner användarmanual för bankernas kontonummer">bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf (bankgirot.se).</a></p>
+<h4>Svenskt nationellt kontonummer är inte ett BBAN</h4>
+<p>Det är viktigt att förstå att när vi anger ett svenskt bankkontonummer (clearingnummer + räkningsnummer) är det inte samma sak som ett BBAN (står för Basic Bank Account Number).<br />BBAN har ingen internationell standard utan sätts av varje land, i Sverige är ett kontonummer uttryckt som BBAN alltid 20 tecken. Det som skiljer ett svenskt BBAN från dess motsvarighet i IBAN är endast de fyra första tecknen, mer om IBAN i punkt 3 nedan, i övrigt är de lika i sin sammansättning.</p>
+<p>Definitionen av det svenska BBAN fastställdes 1996 och är brett spridd, använd och accepterad och beskrivet i standardpublikationer såväl i Sverige som i internationella publikationer.</p>
+<h3>3. Svensk IBAN-struktur</h3>
+<p>IBAN har blivit ett begrepp när det gäller kontonummer och det används för att identifiera ett kontonummer vid internationella transaktioner. Fram till idag har det främst används det vid transaktioner till bankkonton inom det gemensamma eurobetalningsområdet, SEPA (Single Euro Payment Area).</p>
+<p>I de kommande svenska betalinfrastrukturerna är det obligatorisk inom interbankledet att ett kontonummer anges som ett IBAN vilket innebär att banker konverterar ett svenskt nationellt kontonummer till IBAN alternativt att kunden själv anger betalningsmottagarens kontonummer som ett IBAN (när betaltjänstleverantören medger det alternativt har det som krav).</p>
+<p>Utgångspunkten för att kunna skapa ett svenskt kontonummer enligt formatet IBAN är ett svenskt nationellt kontonummer (se punkt 2 ovan för en beskrivning av detta).</p>
+<p>Ett svenskt IBAN är 24 tecken långt och den svenska IBAN-strukturen är beskriven i nedanstående tabell.</p>
+<table border="1" cellpadding="2">
+<tbody>
+<tr><td><p> </p></td><td><p> </p></td><td><p><strong> Identifiering</strong></p></td><td><p><strong> Längd</strong></p></td><td><p><strong> Startposition</strong></p></td></tr>
+<tr><td><p>d</p></td><td><p>SE</p></td><td><p> Landskod (ISO: Country Code)</p></td><td><p>2 </p></td><td><p> 1</p></td></tr>
+<tr><td><p>c2</p></td><td><p>12</p></td><td><p> Checksiffror (IBAN Check Digits)</p></td><td><p>2 </p></td><td><p> 3</p></td></tr>
+<tr><td><p>b</p></td><td><p>123</p></td><td><p> IBAN ID (Bank – Branch Code)</p></td><td><p>3 </p></td><td><p> 5</p></td></tr>
+<tr><td><p>a</p></td><td><p>1234567890123456</p></td><td><p> Kontonummer (Account Number)</p></td><td><p>16 </p></td><td><p> 8</p></td></tr>
+<tr><td><p>c1</p></td><td><p>1</p></td><td><p> Checksiffra (Check digit)</p></td><td><p>1 </p></td><td><p> 24</p></td></tr>
+<tr><td><p> </p></td><td><p>    </p></td><td><p>TOTALT  </p></td><td><p>24 </p></td><td><p> </p></td></tr>
+</tbody>
+</table>
+<p> </p>
+<p>Utifrån det ovan beskrivna kan man givet ett svenskt nationellt kontonummer ta fram motsvarande IBAN som kan användas för att genomföra tex. SEPA betalningar samt betalningar i någon av kommande svenska betalningsinfrastrukturerna. Med utgångspunkt från ett svenskt nationellt kontonummer byggs ett IBAN enligt följande:</p>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p>Position 1–2</p></td><td><p>Här skrivs alltid SE</p></td></tr>
+<tr><td><p>Position 3–4</p></td><td><p>Här skrivs IBAN checksifforna (2) utifrån ISOs standard – detta görs sist enligt särskild beräkning. </p></td></tr>
+<tr><td><p>Position 5–7 </p></td><td><p>Här skriver man in det s.k. IBAN ID, vilket är de tre första siffrorna i respektive banks angivna huvud-clearingnummer – se punkt 4 nedan för en förteckning över olika aktörers IBAN ID.</p></td></tr>
+<tr><td><p>Position 8–24</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p></td><td><p>Här skrivs det svenska kontonumret in (med start bakifrån) med noll-utfyllnad (i framförvarande positioner). Den metod som respektive bank använder för sina clearingnummer påverkar vad denna del ska innehålla samt hur nollutfyllnad görs.</p>
+<p>För Metod 1 ska clearingnumret medtas – nollutfyllnad till vänster om clearingnummer.</p>
+<p>För Metod 2 ska clearingnumret inte medtas – nollutfyllnad till vänster om kontonummer.</p>
+<p>För Metod 3 ska clearingnumret medtas inklusive den femte siffran som då blir en del av clearingnumret – först nollutfyllnad mellan kontonummer och clearingnummer om kontonummer är &lt;10 tecken, därefter nollutfyllnad till vänster om clearingnummer.</p>
+<p>För Metod 4 ska clearingnumret medtas – nollutfyllnad till vänster om clearingnummer.</p></td></tr>
+</tbody>
+</table>
+<p> </p>
+<p>Det finns fyra metoder som kan tillämpas vid konvertering av ett bankkontonummer i nationell kontonummerstruktur (clearingnummer + räkningsnummer).</p>
+<p><strong>För samtliga metoder nedan gäller följande:</strong><br /><strong>XXXX=Clearingnummer, XXX=IBAN-ID, 0 = Siffran 0 vid nollutfyllnad, x = Siffror i kontonummer (0–9 ), C = Kontrollsiffra i svenskt kontonummer, CC=Checksiffror i IBAN</strong></p>
+<h4>METOD<strong> 1</strong></h4>
+<p>Svenskt nationellt kontonummer, Typ 1 Variant 1 och Variant 2, i IBAN-format:<br />Kontonummer: XXXX xxxxxxC<br />Kontonummer i IBAN-format: SECCXXX000000XXXXxxxxxxC</p>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p><strong>Landskod</strong></p></td><td><p><strong>Checksiffror</strong></p></td><td><p><strong>IBAN ID</strong></p></td><td><p><strong>Kontonummer</strong></p></td><td><p><strong>Checksiffra</strong></p></td></tr>
+<tr><td><p>SE</p></td><td><p>CC</p></td><td><p>XXX</p></td><td><p>000000XXXXxxxxxx</p></td><td><p>C</p></td></tr>
+<tr><td><p>ALLTID SE</p></td><td><p>RÄKNAS UT SIST<br /><em>Enligt ISO-standard</em></p></td><td><p><em>3 första i HUVUD- Cl.nr</em></p></td><td><p><em>Kontonummer inkl. CL. Nr. med nollutfyllnad</em></p></td><td><p><em>Sista siffran i svenskt nationellt kontonummer</em></p></td></tr>
+</tbody>
+</table>
+<p> </p>
+<h4>METOD 2</h4>
+<p>Svenskt nationellt kontonummer, Typ 2 Variant 1 och Variant 2, i IBAN-format:<br />Kontonummer: XXXX xxxxxxxxC<br />Kontonummer i IBAN-format: SECCXXX00000000xxxxxxxxC</p>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p><strong>Landskod</strong></p></td><td><p><strong>Checksiffror</strong></p></td><td><p><strong>IBAN ID</strong></p></td><td><p><strong>Kontonummer</strong></p></td><td><p><strong>Checksiffra</strong></p></td></tr>
+<tr><td><p>SE</p></td><td><p>CC</p></td><td><p>XXX</p></td><td><p>00000000xxxxxxxx</p></td><td><p>C</p></td></tr>
+<tr><td><p>ALLTID SE</p></td><td><p>RÄKNAS UT SIST<br /><em>Enligt ISO-standard</em></p></td><td><p><em>3 första i HUVUD- Cl.nr</em></p></td><td><p><em>Kontonummer utan CL. Nr. med nollutfyllnad</em></p></td><td><p><em>Sista siffran i svenskt nationellt kontonummer</em></p></td></tr>
+</tbody>
+</table>
+<p> </p>
+<h4>METOD 3</h4>
+<p>Svenskt nationellt kontonummer, Typ 2 Variant 3, i IBAN-format:<br />Kontonummer: XXXX xxxxxxxxxxC<br />Kontonummer i IBAN-format: IBAN SECCXXX00XXXXxxxxxxxxxxC</p>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p><strong>Landskod</strong></p></td><td><p><strong>Checksiffror</strong></p></td><td><p><strong>IBAN ID</strong></p></td><td><p><strong>Kontonummer</strong></p></td><td><p><strong>Checksiffra</strong></p></td></tr>
+<tr><td><p>SE</p></td><td><p>CC</p></td><td><p>XXX</p></td><td><p>00XXXXxxxxxxxxxx</p></td><td><p>C</p></td></tr>
+<tr><td><p>ALLTID SE</p></td><td><p>RÄKNAS UT SIST<br /><em>Enligt ISO-standard</em></p></td><td><p><em>3 första i HUVUD- Cl.nr</em></p></td><td><p><em>Kontonummer inkl. CL. Nr. med nollutfyllnad</em></p></td><td><p><em>Sista siffran i svenskt nationellt kontonummer</em></p></td></tr>
+</tbody>
+</table>
+<p> </p>
+<h4>METOD 4</h4>
+<p>Svenskt nationellt kontonummer, Typ 2 Variant 4, i IBAN-format: <br />Kontonummer: XXXX, xxxxxxxxxC<br />Kontonummer i IBAN-format: IBAN SECCXXX000XXXXxxxxxxxxxC</p>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p><strong>Landskod</strong></p></td><td><p><strong>Checksiffror</strong></p></td><td><p><strong>IBAN ID</strong></p></td><td><p><strong>Kontonummer</strong></p></td><td><p><strong>Checksiffra</strong></p></td></tr>
+<tr><td><p>SE</p></td><td><p>CC</p></td><td><p>XXX</p></td><td><p>000XXXXxxxxxxxxx</p></td><td><p>C</p></td></tr>
+<tr><td><p>ALLTID SE</p></td><td><p>RÄKNAS UT SIST<br /><em>Enligt ISO-standard</em></p></td><td><p><em>3 första i HUVUD- Cl.nr</em></p></td><td><p><em>Kontonummer inkl. CL. Nr. med nollutfyllnad</em></p></td><td><p><em>Sista siffran i svenskt nationellt kontonummer</em></p></td></tr>
+</tbody>
+</table>
+<p>För en tabell över vilken metod som ska tillämpas för olika aktörer på svensk marknad på deras respektive clearingnummer, se punkt 4 nedan.</p>
+<h3>4. Tabell över Clearingnummer/namn på bank och deras respektive Kontotyp/ IBAN ID/Metod (2025-01-27)</h3>
+<table border="1" cellpadding="2" style="width: 621px;">
+<tbody>
+<tr><td><p><strong>Clearing nr</strong></p></td><td><p><strong>Aktör</strong></p></td><td><p><strong>Kontotyp</strong></p>
+<p><strong>Typ:Variant</strong></p></td><td><p><strong>IBAN ID</strong></p></td><td><p><strong>Metod IBAN konvertering</strong></p></td></tr>
+<tr><td><p>1100-1199</p></td><td><p>Nordea</p></td><td><p>1:1</p></td><td><p>300</p></td><td><p>1</p></td></tr>
+<tr><td><p>1200-1399</p></td><td><p>Danske Bank</p></td><td><p>1:1</p></td><td><p>120</p></td><td><p>1</p></td></tr>
+<tr><td><p>1400-2099</p></td><td><p>Nordea</p></td><td><p>1:1</p></td><td><p>300</p></td><td><p>1</p></td></tr>
+<tr><td><p>2110-2119</p></td><td><p>Juni Technology AB</p></td><td><p>1:1</p></td><td><p>211</p></td><td><p>1</p></td></tr>
+<tr><td><p>2120-2129</p></td><td><p>Steven AB</p></td><td><p>1:1</p></td><td><p>212</p></td><td><p>1</p></td></tr>
+<tr><td><p>2300-2399</p></td><td><p>Ålandsbanken</p></td><td><p>1:2</p></td><td><p>230</p></td><td><p>1</p></td></tr>
+<tr><td><p>2400-2499</p></td><td><p>Danske Bank</p></td><td><p>1:1</p></td><td><p>120</p></td><td><p>1</p></td></tr>
+<tr><td><p>3000-3399</p>
+<p>(exkl. cl.nr 3300)</p></td><td><p>Nordea</p></td><td><p>1:1</p></td><td><p>300</p></td><td><p>1</p></td></tr>
+<tr><td><p>3300-3300</p></td><td><p>Nordea (personkonton)</p></td><td><p>2:1</p></td><td><p>300</p></td><td><p>2</p></td></tr>
+<tr><td><p>3400-3409</p></td><td><p>Länsförsäkringar Bank</p></td><td><p>1:1</p></td><td><p>902</p></td><td><p>1</p></td></tr>
+<tr><td><p>3410-3999,</p>
+<p>(exkl. cl nr 3782)</p></td><td><p>Nordea</p></td><td><p>1:1</p></td><td><p>300</p></td><td><p>1</p></td></tr>
+<tr><td><p>3782-3782</p></td><td><p>Nordea (personkonton)</p></td><td><p>2:1</p></td><td><p>300</p></td><td><p>2</p></td></tr>
+<tr><td><p>4000-4999</p></td><td><p>Nordea</p></td><td><p>1:1</p></td><td><p>300</p></td><td><p>1</p></td></tr>
+<tr><td><p>5000-5999</p></td><td><p>SEB</p></td><td><p>1:1</p></td><td><p>500</p></td><td><p>1</p></td></tr>
+<tr><td><p>6000-6999</p></td><td><p>Handelsbanken</p></td><td><p>2:2</p></td><td><p>600</p></td><td><p>2</p></td></tr>
+<tr><td><p>7000-7999</p></td><td><p>Swedbank</p></td><td><p>1:1</p></td><td><p>800</p></td><td><p>1</p></td></tr>
+<tr><td><p>8000-8999</p></td><td><p>Swedbank</p></td><td><p>2:3</p></td><td><p>800</p></td><td><p>3</p></td></tr>
+<tr><td><p>9020-9029</p></td><td><p>Länsförsäkringar Bank</p></td><td><p>1:2</p></td><td><p>902</p></td><td><p>1</p></td></tr>
+<tr><td><p>9040-9049</p></td><td><p>Citibank (filial)</p></td><td><p>1:2</p></td><td><p>904</p></td><td><p>1</p></td></tr>
+<tr><td><p>9060-9069</p></td><td><p>Länsförsäkringar Bank</p></td><td><p>1:1</p></td><td><p>902</p></td><td><p>1</p></td></tr>
+<tr><td><p>9070-9079</p></td><td><p>Multitude Bank</p></td><td><p>1:1</p></td><td><p>907</p></td><td><p>1</p></td></tr>
+<tr><td><p>9100-9109</p></td><td><p>Nordnet Bank</p></td><td><p>1:2</p></td><td><p>910</p></td><td><p>1</p></td></tr>
+<tr><td><p>9120-9124</p></td><td><p>SEB</p></td><td><p>1:1</p></td><td><p>500</p></td><td><p>1</p></td></tr>
+<tr><td><p>9130-9149</p></td><td><p>SEB</p></td><td><p>1:1</p></td><td><p>500</p></td><td><p>1</p></td></tr>
+<tr><td><p>9150-9169</p></td><td><p>Skandiabanken</p></td><td><p>1:2</p></td><td><p>915</p></td><td><p>1</p></td></tr>
+<tr><td><p>9170-9179</p></td><td><p>Ikanobanken</p></td><td><p>1:1</p></td><td><p>917</p></td><td><p>1</p></td></tr>
+<tr><td><p>9190-9199</p></td><td><p>DNB NOR filial</p></td><td><p>1:2</p></td><td><p>919</p></td><td><p>1</p></td></tr>
+<tr><td><p>9230-9239</p></td><td><p>Marginalen Bank</p></td><td><p>1:1</p></td><td><p>923</p></td><td><p>1</p></td></tr>
+<tr><td><p>9250-9259</p></td><td><p>SBAB Bank</p></td><td><p>1:1</p></td><td><p>925</p></td><td><p>1</p></td></tr>
+<tr><td><p>9270-9279</p></td><td><p>ICA Banken</p></td><td><p>1:1</p></td><td><p>927</p></td><td><p>1</p></td></tr>
+<tr><td><p>9280-9289</p></td><td><p>Resurs Bank AB</p></td><td><p>1:1</p></td><td><p>928</p></td><td><p>1</p></td></tr>
+<tr><td><p>9300-9349*</p></td><td><p>Swedbank</p></td><td><p>2:1</p></td><td><p>930</p></td><td><p>1</p></td></tr>
+<tr><td><p>9390-9399</p></td><td><p>Landshypotek</p></td><td><p>1:2</p></td><td><p>939</p></td><td><p>1</p></td></tr>
+<tr><td><p>9400-9449</p></td><td><p>Forex Bank</p></td><td><p>1:1</p></td><td><p>940</p></td><td><p>1</p></td></tr>
+<tr><td><p>9460-9469</p></td><td><p>Santander Consumer Bank</p></td><td><p>1:1</p></td><td><p>946</p></td><td><p>1</p></td></tr>
+<tr><td><p>9470-9479</p></td><td><p>BNP Paribas</p></td><td><p>1:2</p></td><td><p>947</p></td><td><p>1</p></td></tr>
+<tr><td><p>9500-9549</p></td><td><p>Nordea (Plusgirot)</p></td><td><p>2:3</p></td><td><p>950</p></td><td><p>3</p></td></tr>
+<tr><td><p>9550-9564</p></td><td><p>Avanza Bank</p></td><td><p>1:2</p></td><td><p>955</p></td><td><p>1</p></td></tr>
+<tr><td><p>9565-9569</p></td><td><p>Avanza Bank</p></td><td><p>2:4</p></td><td><p>955</p></td><td><p>4</p></td></tr>
+<tr><td><p>9570-9579</p></td><td><p>Sparbanken Syd</p></td><td><p>2:1</p></td><td><p>957</p></td><td><p>2</p></td></tr>
+<tr><td><p>9580-9589</p></td><td><p>AION Bank</p></td><td><p>1:1</p></td><td><p>958</p></td><td><p>1</p></td></tr>
+<tr><td><p>9590-9599</p></td><td><p>EP Bank AB</p></td><td><p>1:2</p></td><td><p>959</p></td><td><p>1</p></td></tr>
+<tr><td><p>9600-9606</p></td><td><p>Banking Circle SE</p></td><td><p>2:4</p></td><td><p>960</p></td><td><p>4</p></td></tr>
+<tr><td><p>9630-9639</p></td><td><p>Lån &amp; Spar Bank A/S, filial</p></td><td><p>1:1</p></td><td><p>963</p></td><td><p>1</p></td></tr>
+<tr><td><p>9640-9649</p></td><td><p>NOBA Bank</p></td><td><p>1:2</p></td><td><p>964</p></td><td><p>1</p></td></tr>
+<tr><td><p>9660-9669</p></td><td><p>Svea Bank</p></td><td><p>1:2</p></td><td><p>966</p></td><td><p>1</p></td></tr>
+<tr><td><p>9670-9679</p></td><td><p>JAK Medlemsbank</p></td><td><p>1:2</p></td><td><p>967</p></td><td><p>1</p></td></tr>
+<tr><td><p>9680-9689</p></td><td><p>Enity Bank Group (Bluestep)</p></td><td><p>1:1</p></td><td><p>968</p></td><td><p>1</p></td></tr>
+<tr><td><p>9700-9709</p></td><td><p>Ekobanken</p></td><td><p>1:2</p></td><td><p>970</p></td><td><p>1</p></td></tr>
+<tr><td><p>9710-9719</p></td><td><p>Lunar Bank</p></td><td><p>1:2</p></td><td><p>971</p></td><td><p>1</p></td></tr>
+<tr><td><p>9750-9759</p></td><td><p>Northmill Bank</p></td><td><p>1:2</p></td><td><p>975</p></td><td><p>1</p></td></tr>
+<tr><td><p>9780-9789</p></td><td><p>Klarna Bank</p></td><td><p>1:2</p></td><td><p>978</p></td><td><p>1</p></td></tr>
+<tr><td><p>9960-9969</p></td><td><p>Nordea (Plusgirot)</p></td><td><p>2:3</p></td><td><p>950</p></td><td><p>3</p></td></tr>
+</tbody>
+</table>
+<p><em>*Swedbank har meddelat att serien utgår i samband med att Dataclearingen avvecklats. Clearingnummer under 1 000, såsom 0001-0999 osv. kan av tekniska skäl inte utnyttjas.</em></p>
+<p><strong>Disclaimer</strong>: Eventuella felaktigheter och förändrade förhållanden bör anmälas till Bankinfrastruktur i Sverige AB. Bankinfrastruktur i Sverige AB garanterar inte att publicerade uppgifter är korrekta. Informationen uppdateras och kompletteras kontinuerligt.</p>
+<h3>5. För ytterligare information</h3>
+<p>Kontakta <a href="mailto:helena.stjernstedt@swedishbankers.se">BSAB</a> om du har frågor om innehållet på denna websida.<br />Vill du hålla du uppdaterad om när något händer kan du anmäla dig till ERP Info via <a href="mailto:info@transformationprogram.se?subject=Anmälan%20till%20ERP%20Info" data-anchor="?subject=Anmälan%20till%20ERP%20Info">denna länk</a>. ERP Info används för kommunikation vid olika typer av nyheter/förändringar.</p>
+    </div>
+</article>
+
+
+        </div>
+        <div class="Grid-item -one-third">
+            
+        </div>
+    </div>
+</div>
+
+    <div class="Article Wrapper-inner">
+        <p class="Article-lastupdated">
+            Senast uppdaterad: 2025-02-03
+        </p>
+    </div>
+
