@@ -55,9 +55,25 @@ def parsebankgirot(file, url, archivedate):
             for r in splittomultiplerows(row):
                 yield strrow(r)
 
+def parseibanid(file, url, archivedate):
+    yield f"# {url}"
+    tables = camelot.read_pdf(file, pages="all")
+    for t in tables:
+        if t.accuracy < 99 or len(t.cols) != 5:
+            continue
+        for row in t.df.itertuples(index=False):
+            if "Clearing number" in row[0]:
+                # ignore header
+                continue
+            # column 2 of iban file should be ibanid
+            pfx = "# " if not row[1].isdigit() else ""
+            yield pfx + strrow(row)
+
 def getparser(file):
     if "bankernaskontonummeruppbyggnad" in file:
         return [parsebankgirot, "Bankgirot.txt"]
+    if "iban-id" in file:
+        return [parseibanid, "IbanBic.txt"]
     return None
 
 if __name__ == "__main__":
