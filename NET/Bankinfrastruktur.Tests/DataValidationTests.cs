@@ -52,7 +52,20 @@ public class DataValidationTests
     }
 
     private static Dictionary<int, string> GetClearingDictLines(IEnumerable<string> lines) =>
-        lines.ToDictionary(l => Convert.ToInt32(l.Split(new[] { '|' }, 2)[0]));
+        lines.ToDictionary(l => Convert.ToInt32(l.Split(['|'], 2)[0]));
+
+    [Test]
+    public void VerifyAllRowsOfIbanBicTest()
+    {
+        var data = Helpers.FindAndReadTextFile("IbanBic.txt");
+        Assert.Multiple(() =>
+        {
+            foreach (var l in Helpers.GetLines(data))
+            {
+                ParseIbanBicLine(l);
+            }
+        });
+    }
 
     [TestCase("Bankgirot.txt", "IbanBic.txt")]
     public void EnsureDataFromSeparateSources(string bgFile, string ibanBicFile)
@@ -98,9 +111,9 @@ public class DataValidationTests
         var prefixLength = 0;
         foreach (var c in format.Reverse())
         {
-            var allowedChars = formatLength == 0 ? new char[] { 'C' } :
+            var allowedChars = formatLength == 0 ? ['C'] :
                 prefixLength == 0 ? new char[] { 'x', '0' } :
-                new char[] { '0' };
+                ['0'];
             Assert.That(c, Is.AnyOf(allowedChars), $"Unexpected format char in {format} from {l}");
             if (c == 'C' || c == 'x')
                 formatLength++;
@@ -124,13 +137,12 @@ public class DataValidationTests
         var normParts = new[] { "", "", name, $"Type{typ}", $"Comment{parts[3]}", $"{formatLength}" };
         var ranges = new[] { (clrStart, clrEnd) };
         if (clearinRange[4] == '/')
-            ranges = new[] { (clrStart, clrStart), 
-                (clrEnd, clrEnd) };
+            ranges = [(clrStart, clrStart), (clrEnd, clrEnd)];
         foreach (var splClr in new[] { 3300, 3782 })
         {
             if (clrStart < splClr && splClr < clrEnd)
             {
-                ranges = new[] { (clrStart, splClr - 1), (splClr + 1, clrEnd) };
+                ranges = [(clrStart, splClr - 1), (splClr + 1, clrEnd)];
                 normParts[2] = name.Replace($" (exkl. personkonton, cl {splClr})", string.Empty);
             }
         }
@@ -176,15 +188,15 @@ public class DataValidationTests
         .Select(s => string.Join("|", s[0], s[1], s[2], s[3], s[4], s[7])); // , s[6]
 
     // Vi behöver dela upp och städa en del av datan ifrån PDFen
-    private static readonly Dictionary<int, (string, string[])> TextCleaners = new()
-    {
-        {3000, ("3000-3399, (exkl. personkto, cl nr 3300)", new[] { "3000-3299", "3301-3399" })},
-        {3300, ("3300 (personkto)",  new[] { "3300-3300"})},
-        {3410, ("3410-4999, (exkl. personkto, cl nr 3782)", new[] { "3410-3781", "3783-3999", "4000-4999" })}, // 3 och 4 har olika kommentarer
-        {3782, ("3782 (personkto)", new[] { "3782-3782" })},
-        {9190, (" DnB NOR filial", new[] { " DnB Bank" })},
-        {9280, (" Resurs Bank AB", new[] { " Resurs Bank" })},
-    };
+    private static readonly List<(string startsWith, string find, string[] replacewith)> TextCleaners =
+    [
+        ("3000", "3000-3399, (exkl. personkto, cl nr 3300)", ["3000-3299", "3301-3399"]),
+        ("3300", "3300 (personkto)", ["3300-3300"]),
+        ("3410", "3410-4999, (exkl. personkto, cl nr 3782)", ["3410-3781", "3783-3999", "4000-4999"]), // 3 och 4 har olika kommentarer
+        ("3782", "3782 (personkto)", ["3782-3782"]),
+        ("9190", " DnB NOR filial", [" DnB Bank"]),
+        ("9280", " Resurs Bank AB", [" Resurs Bank"]),
+    ];
 
     private static readonly Dictionary<int, string> ForceMethod = new()
     {
@@ -193,6 +205,13 @@ public class DataValidationTests
 
     private static IEnumerable<string[]> ParseIbanBicLine(string l)
     {
+        foreach (var (startsWith, find, replacewith) in TextCleaners
+            .Where(c => l.StartsWith(c.startsWith) && l.Contains(c.find)))
+        {
+            Console.WriteLine($" Modifying {l} -> {replacewith[0]} ...");
+            return replacewith.SelectMany(rw => ParseIbanBicLine(l.Replace(find, rw)));
+        }
+
         var parts = l.Split('|');
         Assert.That(parts, Has.Length.EqualTo(5), l);
         var clearing = parts[0];
@@ -203,14 +222,6 @@ public class DataValidationTests
         if (clearing[^1] == '*')  // ignore notes *Swedbank har meddelat att serien utgår i samband med att Dataclearingen avvecklas.
             clearing = clearing[..^1];
 
-        var clearingStart = Convert.ToInt32(clearing[..4]);
-        if (TextCleaners.TryGetValue(clearingStart, out var cleanThis) &&
-            l.Contains(cleanThis.Item1))
-        {
-            Console.WriteLine($" Modifying {l} -> {cleanThis.Item2[0]} ...");
-            return cleanThis.Item2.SelectMany(r => ParseIbanBicLine(l.Replace(cleanThis.Item1, r)));
-        }
-
         Assert.Multiple(() =>
         {
             Assert.That(clearing, Has.Length.EqualTo(9), l);
@@ -219,12 +230,13 @@ public class DataValidationTests
             Assert.That(clearing[4], Is.EqualTo('-'), l);
         });
 
+        var clearingStart = Convert.ToInt32(clearing[..4]);
         var clearingEnd = Convert.ToInt32(clearing[5..]);
         var ibanId = Convert.ToInt32(sibanId);
         if (method.Length == 0)
             method = ForceMethod.TryGetValue(clearingStart, out var forceMethod) ? forceMethod : "Unknown";
         Assert.That(method, Is.AnyOf("1", "2", "3", "4", "Unknown"), l);
-        return new[] { new[] { $"{clearingStart}", $"{clearingEnd}", $"{ibanId}", bic, name, method } };
+        return [[$"{clearingStart}", $"{clearingEnd}", $"{ibanId}", bic, name, method]];
     }
 
     private static IEnumerable<string> ParseIbanBicText(string data)

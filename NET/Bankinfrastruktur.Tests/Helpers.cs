@@ -18,7 +18,7 @@ internal static class Helpers
     }
 
     public static IEnumerable<string> GetLines(string data) =>
-        data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+        data.Split(["\r\n", "\r", "\n"], StringSplitOptions.None)
         .Select(l => l.Trim())
         .Where(l => l.Length != 0 && l[0] != '#');
 
