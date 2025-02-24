@@ -32,6 +32,33 @@ public static partial class DocumentExtractor
             return null;
 
         var sb = new StringBuilder();
+        foreach (var tbl in wpb.Descendants<Table>())
+        {
+            foreach (var capt in tbl.Descendants<TableCaption>())
+            {
+                sb.Append($"# {capt.InnerText}\n");
+            }
+            foreach (var row in tbl.Descendants<TableRow>())
+            {
+                var cells = row.Descendants<TableCell>().ToList();
+                bool needSeparator = false;
+                foreach (var cell in cells)
+                {
+                    if (needSeparator)
+                    {
+                        sb.Append('|');
+                    }
+                    else if (cells.Count == 1 || cell.InnerText.StartsWith("Clearing number"))
+                    {
+                        sb.Append("# ");
+                    }
+                    sb.Append(cell.InnerText.Trim());
+                    needSeparator = true;
+                }
+                sb.Append('\n');
+            }
+        }
+
         foreach (var p in wpb.Descendants<Paragraph>())
         {
             var hasTab = p.Descendants<TabChar>().ToList();
@@ -47,7 +74,7 @@ public static partial class DocumentExtractor
                 sb.Append(c is TabChar ? "|" : c.InnerText);
                 lastC = c;
             }
-            sb.AppendLine();
+            sb.Append('\n');
         }
         return sb.Length == 0 ? null : sb.ToString();
     }
@@ -57,18 +84,24 @@ public static partial class DocumentExtractor
         if (doc.LocalName.EndsWith(".docx"))
         {
             var localName = doc.LocalName;
-            if (doc.LocalName.Contains("_bokstavsordning."))
+            if (localName.Contains("_bokstavsordning."))
             {
                 // 1906_clearingnummer-institut-241202_bokstavsordning.docx
                 localName = "clearingnummer-institut_bokstavsordning.txt";
             }
-            else if (doc.LocalName.Contains("_nummerordning."))
+            else if (localName.Contains("_nummerordning."))
             {
                 // 1906_clearingnummer-institut-241202_nummerordning.docx
                 localName = "clearingnummer-institut_nummerordning.txt";
             }
+            else if (localName.Contains("iban-id-och-bic-adress-for-banker"))
+            {
+                // short lived docx version of the pdf
+                localName = "IbanBic.txt";
+            }
             else
             {
+                Console.WriteLine($" ## did not handle {localName} from {doc}");
                 yield break;
             }
 
