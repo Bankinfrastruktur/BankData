@@ -45,7 +45,7 @@ public class AccountTests
     public void BankAccountValidationTest(string clearing, string account, ValidationIssues error)
     {
         var acc = new Account(clearing, account);
-        Console.WriteLine($"{acc.BankRecord?.BankName}, {acc.BankRecord?.AccountType}, {acc.BankRecord?.CheckDigitType}, {acc.BankRecord?.IbanMethod}");
+        Console.WriteLine($"{acc.BankRecord?.BankName}, {acc.BankRecord?.AccountTypeCombined}, {acc.BankRecord?.IbanMethod}");
         var parsed = Account.Parse(acc.ToString());
         var parsed2 = Account.Parse(parsed?.ToString());
         Assert.Multiple(() =>

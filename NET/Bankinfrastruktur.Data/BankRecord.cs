@@ -8,14 +8,13 @@ public class BankRecord
             throw new ArgumentOutOfRangeException(paramName, clearing, "Must be 4 numbers");
     }
 
-    public static readonly BankRecord BasicType1Comment1 = new(CheckDigitTypeType.Comment1, "-");
-    public static readonly BankRecord BasicType1Comment2 = new(CheckDigitTypeType.Comment2, "-");
+    public static readonly BankRecord BasicType1Comment1 = new(AccountTypeType.Type1c1, "-");
+    public static readonly BankRecord BasicType1Comment2 = new(AccountTypeType.Type1c2, "-");
 
     /// <summary>Create generic type1 bank</summary>
-    private BankRecord(CheckDigitTypeType checkDigitType, string bankName)
+    private BankRecord(AccountTypeType accountType, string bankName)
     {
-        AccountType = AccountTypeType.Type1;
-        CheckDigitType = checkDigitType;
+        AccountTypeCombined = accountType;
         BankName = bankName;
         BIC = string.Empty;
         AccountNumberMinLength = 7;
@@ -36,46 +35,49 @@ public class BankRecord
         IbanId = int.Parse(s[i++]);
         BIC = s[i++];
         BankName = s[i++];
-        if (Enum.TryParse(s[i++], out AccountTypeType accountType))
-            AccountType = accountType;
-        if (Enum.TryParse(s[i++], out CheckDigitTypeType checkDigitType))
-            CheckDigitType = checkDigitType;
+        var typeStr = s[i++];
+        var commentStr = s[i++];
+        if (Enum.TryParse(typeStr + commentStr.Replace("Comment", "c"), out AccountTypeType accountType) ||
+            Enum.TryParse(typeStr, out accountType))
+            AccountTypeCombined = accountType;
+        if (AccountTypeCombined == AccountTypeType.Type1 || AccountTypeCombined == AccountTypeType.Type2)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"unsupported {nameof(AccountTypeCombined)}");
+        if (AccountType == AccountTypeType.Invalid)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"{nameof(AccountType)} {AccountType}");
+        if (Enum.TryParse(commentStr, out CheckDigitTypeType checkDigitType)
+            && checkDigitType != CheckDigitType)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"{nameof(CheckDigitType)} {CheckDigitType} != {checkDigitType}");
         if (Enum.TryParse(s[i++], out IbanMethodType ibanMethod))
             IbanMethod = ibanMethod;
         AccountNumberMinLength = int.Parse(s[i++]);
         AccountNumberLength = int.Parse(s[i++]);
 
         if (ClearingEnd < ClearingStart)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(ClearingStart)} {ClearingStart} <= {nameof(ClearingEnd)} {ClearingEnd}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected {nameof(ClearingStart)} {ClearingStart} <= {nameof(ClearingEnd)} {ClearingEnd}");
         if (CheckDigitType == CheckDigitTypeType.Invalid)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"{nameof(CheckDigitType)} {CheckDigitType}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"{nameof(CheckDigitType)} {CheckDigitType}");
         if (BIC.Length != 8)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(BIC)} length 8 {BIC}");
-        if (AccountType == AccountTypeType.Type1)
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected {nameof(BIC)} length 8 {BIC}");
+        if (AccountTypeCombined == AccountTypeType.Type1c1 || AccountTypeCombined == AccountTypeType.Type1c2)
         {
             if (AccountNumberLength != 7)
-                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberLength)} 7 was {AccountNumberLength}");
+                throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected {nameof(AccountNumberLength)} 7 was {AccountNumberLength}");
             if (IbanMethod != IbanMethodType.Method1)
-                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected IBAN {nameof(IbanMethodType.Method1)} was {IbanMethod}");
+                throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected IBAN {nameof(IbanMethodType.Method1)} was {IbanMethod}");
         }
-        else if (AccountType == AccountTypeType.Type2)
+        else if (AccountTypeCombined == AccountTypeType.Type2c1 || AccountTypeCombined == AccountTypeType.Type2c2
+            || AccountTypeCombined == AccountTypeType.Type2c3)
         {
-            if (AccountNumberLength == 7)
-                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberLength)} Not 7 was {AccountNumberLength}");
-            if ((checkDigitType == CheckDigitTypeType.Comment1 ||
-                checkDigitType == CheckDigitTypeType.Comment3) &&
-                AccountNumberLength != 10)
-                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberLength)} 10 was {AccountNumberLength}");
-            if (checkDigitType == CheckDigitTypeType.Comment2 &&
-                AccountNumberLength != 9)
-                throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberLength)} 9 was {AccountNumberLength}");
+            var expectedLength = AccountTypeCombined == AccountTypeType.Type2c2 ? 9 : 10;
+            if (AccountNumberLength != expectedLength)
+                throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected {nameof(AccountNumberLength)} {expectedLength} was {AccountNumberLength}");
         }
         else
         {
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"unhandled {nameof(AccountType)}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"unhandled {nameof(AccountTypeCombined)}");
         }
         if (AccountNumberLength < AccountNumberMinLength)
-            throw new BankRecordDataException(ClearingStart, BankName, AccountType, $"expected {nameof(AccountNumberMinLength)} {AccountNumberMinLength} <= {nameof(AccountNumberLength)} {AccountNumberLength}");
+            throw new BankRecordDataException(ClearingStart, BankName, AccountTypeCombined, $"expected {nameof(AccountNumberMinLength)} {AccountNumberMinLength} <= {nameof(AccountNumberLength)} {AccountNumberLength}");
     }
 
     public override string ToString()
@@ -98,8 +100,21 @@ public class BankRecord
     public string BIC { get; }
     public string BankName { get; }
 
-    public AccountTypeType AccountType { get; }
-    public CheckDigitTypeType CheckDigitType { get; }
+    public AccountTypeType AccountTypeCombined { get; }
+    public AccountTypeType AccountType => AccountTypeCombined switch {
+        AccountTypeType.Type1c1 or
+        AccountTypeType.Type1c2 => AccountTypeType.Type1,
+        AccountTypeType.Type2c1 or
+        AccountTypeType.Type2c2 or
+        AccountTypeType.Type2c3 => AccountTypeType.Type2,
+        _ => AccountTypeType.Invalid,
+    };
+    public CheckDigitTypeType CheckDigitType => AccountTypeCombined switch {
+        AccountTypeType.Type1c1 or AccountTypeType.Type2c1 => CheckDigitTypeType.Comment1,
+        AccountTypeType.Type1c2 or AccountTypeType.Type2c2 => CheckDigitTypeType.Comment2,
+        AccountTypeType.Type2c3 => CheckDigitTypeType.Comment3,
+        _ => CheckDigitTypeType.Invalid,
+    };
     public IbanMethodType IbanMethod { get; }
     public int AccountNumberMinLength { get; }
     public int AccountNumberLength { get; }

@@ -25,7 +25,7 @@ public static partial class Banks
     public static List<BankRecord> GetList(string data)
     {
         var bankDatas = new List<BankRecord>();
-        foreach (var l in data.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None))
+        foreach (var l in data.Split(["\r\n", "\r", "\n"], StringSplitOptions.None))
         {
             if (string.IsNullOrEmpty(l) ||
                 l[0] == '#') continue;

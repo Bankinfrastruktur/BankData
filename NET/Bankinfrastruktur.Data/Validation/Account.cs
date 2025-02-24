@@ -15,8 +15,8 @@ public partial class Account
     public static int GetClearingLength(string clearing) =>
         IsSwb8(clearing) ? ClearingLengthSwb8 : ClearingLengthOthers;
 
-    /// <summary>Validates <see cref="AccountTypeType.Type1"/> <see cref="CheckDigitTypeType.Comment1"/> or
-    /// <see cref="CheckDigitTypeType.Comment2"/>, returns instance for valid</summary>
+    /// <summary>Validates <see cref="AccountTypeType.Type1c1"/> or
+    /// <see cref="AccountTypeType.Type1c2"/>, returns instance for valid</summary>
     private static BankRecord? GetFallbackBank(string clearing, string bankAccount) =>
         new[] { BankRecord.BasicType1Comment1, BankRecord.BasicType1Comment2 }
             .FirstOrDefault(b => b.ValidateChecksum(clearing, bankAccount));
@@ -98,7 +98,7 @@ public partial class Account
         if (string.IsNullOrEmpty(accountString))
             return null;
 
-        var split = accountString!.Split(new[] { ',' }, 3);
+        var split = accountString!.Split([','], 3);
         if (split.Length == 2)
             return new(split[0].Trim(), split[1].Trim());
 

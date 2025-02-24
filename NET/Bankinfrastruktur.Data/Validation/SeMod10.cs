@@ -2,7 +2,7 @@ namespace Bankinfrastruktur.Validation;
 
 public static class SeMod10
 {
-    private static readonly int[] mod10map = new[] { 0, 2, 4, 6, 8, 1, 3, 5, 7, 9 }; // map index to mult x * 2 % 10 + 1
+    private static readonly int[] mod10map = [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]; // map index to mult x * 2 % 10 + 1
     private static int Sum(string number)
     {
         bool bit = true;

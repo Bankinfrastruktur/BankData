@@ -54,18 +54,18 @@ public class SimpleValidationsTests
         Console.WriteLine(ex.ToString());
     }
 
-    [TestCase("1001|1000|971|LUNADK2B|x Bank|Type1|Comment2|Method1|7|7", 1001, "x Bank", AccountTypeType.Type1, "expected ClearingStart 1001 <= ClearingEnd 1000")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|x|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Invalid, "unhandled AccountType")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|x|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1, "CheckDigitType Invalid")]
-    [TestCase("9710|9719|971|LUNADK2|x Bank|Type1|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1, "expected BIC length 8 LUNADK2")]
-    [TestCase("9710|9719|971|LUNADK2xx|x Bank|Type1|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1, "expected BIC length 8 LUNADK2xx")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method1|7|8", 9710, "x Bank", AccountTypeType.Type1, "expected AccountNumberLength 7 was 8")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method2|7|7", 9710, "x Bank", AccountTypeType.Type1, "expected IBAN Method1 was Method2")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment2|Method2|7|7", 9710, "x Bank", AccountTypeType.Type2, "expected AccountNumberLength Not 7 was 7")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment1|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2, "expected AccountNumberLength 10 was 8")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment3|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2, "expected AccountNumberLength 10 was 8")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment2|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2, "expected AccountNumberLength 9 was 8")]
-    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method1|8|7", 9710, "x Bank", AccountTypeType.Type1, "expected AccountNumberMinLength 8 <= AccountNumberLength 7")]
+    [TestCase("1001|1000|971|LUNADK2B|x Bank|Type1|Comment2|Method1|7|7", 1001, "x Bank", AccountTypeType.Type1c2, "expected ClearingStart 1001 <= ClearingEnd 1000")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|x|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Invalid, "AccountType Invalid")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|x|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1, "unsupported AccountTypeCombined")]
+    [TestCase("9710|9719|971|LUNADK2|x Bank|Type1|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1c2, "expected BIC length 8 LUNADK2")]
+    [TestCase("9710|9719|971|LUNADK2xx|x Bank|Type1|Comment2|Method1|7|7", 9710, "x Bank", AccountTypeType.Type1c2, "expected BIC length 8 LUNADK2xx")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method1|7|8", 9710, "x Bank", AccountTypeType.Type1c2, "expected AccountNumberLength 7 was 8")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method2|7|7", 9710, "x Bank", AccountTypeType.Type1c2, "expected IBAN Method1 was Method2")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment2|Method2|7|7", 9710, "x Bank", AccountTypeType.Type2c2, "expected AccountNumberLength 9 was 7")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment1|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2c1, "expected AccountNumberLength 10 was 8")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment3|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2c3, "expected AccountNumberLength 10 was 8")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type2|Comment2|Method2|7|8", 9710, "x Bank", AccountTypeType.Type2c2, "expected AccountNumberLength 9 was 8")]
+    [TestCase("9710|9719|971|LUNADK2B|x Bank|Type1|Comment2|Method1|8|7", 9710, "x Bank", AccountTypeType.Type1c2, "expected AccountNumberMinLength 8 <= AccountNumberLength 7")]
     public void BankRecordCtorThrowsTest(string line, int clearingStart, string bankName, AccountTypeType accountType, string issue)
     {
         var ex = Assert.Catch<BankRecordDataException>(() => Banks.GetList(line));
@@ -86,8 +86,8 @@ public class SimpleValidationsTests
     {
         Assert.Multiple(() =>
         {
-            Assert.That(BankRecord.BasicType1Comment1.CheckDigitType, Is.EqualTo(CheckDigitTypeType.Comment1));
-            Assert.That(BankRecord.BasicType1Comment2.CheckDigitType, Is.EqualTo(CheckDigitTypeType.Comment2));
+            Assert.That(BankRecord.BasicType1Comment1.AccountTypeCombined, Is.EqualTo(AccountTypeType.Type1c1));
+            Assert.That(BankRecord.BasicType1Comment2.AccountTypeCombined, Is.EqualTo(AccountTypeType.Type1c2));
         });
         foreach (var rec in new[] {
             BankRecord.BasicType1Comment1, 
