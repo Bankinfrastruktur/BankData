@@ -37,7 +37,10 @@ public static class GrabAndDownload
         var pageData = await DocumentHelpers.FetchToMemoryAsync(url);
         var documentUrls = DocumentHelpers.GetDocumentUrisFromPage(pageData, url).ToHashSet();
         if (ensureBankgirot)
+        {
             documentUrls.Add(new Uri("https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf"));
+            documentUrls.Add(new Uri("https://www.bankinfrastruktur.se/media/aorlldni/iban-id-och-bic-adress-for-banker-2024-10-23.pdf"));
+        }
         var page = new Page();
         foreach (var u in documentUrls)
         {
