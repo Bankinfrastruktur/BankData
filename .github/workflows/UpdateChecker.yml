@@ -124,7 +124,7 @@ jobs:
           update_existing: false
       - name: Issue created info
         if: steps.create-issue.outputs.number != ''
-        run: echo Created issue ${{ steps.create-issue.outputs.number }} at ${{ steps.create-issue.outputs.url }}; exit 1
+        run: echo Created issue ${{ steps.create-issue.outputs.number }} at ${{ steps.create-issue.outputs.url }}
       - name: Pull request UpdateCheckerDiscovery
         if:   steps.data-changes.outputs.staged == 'true'
         id:   create-pr
