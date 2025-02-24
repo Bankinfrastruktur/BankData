@@ -1,8 +1,9 @@
-# https://web.archive.org/web/20230907140651/https://www.bankinfrastruktur.se/media/s0of3yyj/iban-id-och-bic-adress-for-banker-2023-09-07.pdf
-# Tabell över Clearingnummer och deras respektive IBAN ID, BIC, Metod och namn på bank (2023-09-07)
+# https://web.archive.org/web/20250224101915/https://www.bankinfrastruktur.se/media/aorlldni/iban-id-och-bic-adress-for-banker-2024-10-23.pdf
+# Tabell över Clearingnummer och deras respektive IBAN ID, BIC, Metod och namn på bank (2024-10-23)
 1100-1199|300|NDEASESS|Nordea|1
 1200-1399|120|DABASESX|Danske Bank|1
 1400-2099|300|NDEASESS|Nordea|1
+2110-2119|211|JUNTSEG2|Juni Technology AB|1
 2300-2399|230|AABASESS|Ålandsbanken|1
 2400-2499|120|DABASESX|Danske Bank|1
 3000-3399, (exkl. personkto, cl nr 3300)|300|NDEASESS|Nordea|1
@@ -38,6 +39,7 @@
 9570-9579|957|SPSDSE23|Sparbanken Syd|2
 9580-9589|958|BMPBSESS|AION Bank|1
 9590-9599|959|ERPFSES2|Erik Penser Bank AB|1
+9600-9606|960|BCIRSE22|Banking Circle SE|4
 9630-9639|963|LOSADKKK|Lån & Spar Bank A/S, filial|1
 9640-9649|964|NOFBSESS|NOBA Bank|1
 9650-9659|965|MEMMSE21|MedMera Bank AB|1

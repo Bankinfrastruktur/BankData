@@ -224,7 +224,7 @@ public class DataValidationTests
         var ibanId = Convert.ToInt32(sibanId);
         if (method.Length == 0)
             method = ForceMethod.TryGetValue(clearingStart, out var forceMethod) ? forceMethod : "Unknown";
-        Assert.That(method, Is.AnyOf("1", "2", "3", "Unknown"), l);
+        Assert.That(method, Is.AnyOf("1", "2", "3", "4", "Unknown"), l);
         return new[] { new[] { $"{clearingStart}", $"{clearingEnd}", $"{ibanId}", bic, name, method } };
     }
 
