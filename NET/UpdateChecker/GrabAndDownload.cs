@@ -40,6 +40,9 @@ public static class GrabAndDownload
         {
             documentUrls.Add(new Uri("https://www.bankgirot.se/globalassets/dokument/anvandarmanualer/bankernaskontonummeruppbyggnad_anvandarmanual_sv.pdf"));
             documentUrls.Add(new Uri("https://www.bankinfrastruktur.se/media/aorlldni/iban-id-och-bic-adress-for-banker-2024-10-23.pdf"));
+            documentUrls.Add(new Uri("https://www.bankinfrastruktur.se/media/e2zpersz/iban-id-och-bic-adress-for-banker-2024-09-23.docx"));
+            documentUrls.Add(new Uri("https://www.bankinfrastruktur.se/media/efnnyi4j/iban-id-och-bic-adress-for-banker-2024-09-23-2.docx"));
+            documentUrls.Add(new Uri("https://www.bankinfrastruktur.se/media/wdclxuaq/iban-id-och-bic-adress-for-banker-2024-11-04.docx"));
         }
         var page = new Page();
         foreach (var u in documentUrls)
