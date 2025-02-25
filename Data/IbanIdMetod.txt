@@ -1,0 +1,56 @@
+# https://web.archive.org/web/20250222183840/https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer
+# 4. Tabell över Clearingnummer/namn på bank och deras respektive Kontotyp/ IBAN ID/Metod (2025-01-27)
+# Clearing nr|Aktör|KontotypTyp:Variant|IBAN ID|Metod IBAN konvertering
+1100-1199|Nordea|1:1|300|1
+1200-1399|Danske Bank|1:1|120|1
+1400-2099|Nordea|1:1|300|1
+2110-2119|Juni Technology AB|1:1|211|1
+2120-2129|Steven AB|1:1|212|1
+2300-2399|Ålandsbanken|1:2|230|1
+2400-2499|Danske Bank|1:1|120|1
+3000-3399(exkl. cl.nr 3300)|Nordea|1:1|300|1
+3300-3300|Nordea (personkonton)|2:1|300|2
+3400-3409|Länsförsäkringar Bank|1:1|902|1
+3410-3999,(exkl. cl nr 3782)|Nordea|1:1|300|1
+3782-3782|Nordea (personkonton)|2:1|300|2
+4000-4999|Nordea|1:1|300|1
+5000-5999|SEB|1:1|500|1
+6000-6999|Handelsbanken|2:2|600|2
+7000-7999|Swedbank|1:1|800|1
+8000-8999|Swedbank|2:3|800|3
+9020-9029|Länsförsäkringar Bank|1:2|902|1
+9040-9049|Citibank (filial)|1:2|904|1
+9060-9069|Länsförsäkringar Bank|1:1|902|1
+9070-9079|Multitude Bank|1:1|907|1
+9100-9109|Nordnet Bank|1:2|910|1
+9120-9124|SEB|1:1|500|1
+9130-9149|SEB|1:1|500|1
+9150-9169|Skandiabanken|1:2|915|1
+9170-9179|Ikanobanken|1:1|917|1
+9190-9199|DNB NOR filial|1:2|919|1
+9230-9239|Marginalen Bank|1:1|923|1
+9250-9259|SBAB Bank|1:1|925|1
+9270-9279|ICA Banken|1:1|927|1
+9280-9289|Resurs Bank AB|1:1|928|1
+9300-9349*|Swedbank|2:1|930|1
+9390-9399|Landshypotek|1:2|939|1
+9400-9449|Forex Bank|1:1|940|1
+9460-9469|Santander Consumer Bank|1:1|946|1
+9470-9479|BNP Paribas|1:2|947|1
+9500-9549|Nordea (Plusgirot)|2:3|950|3
+9550-9564|Avanza Bank|1:2|955|1
+9565-9569|Avanza Bank|2:4|955|4
+9570-9579|Sparbanken Syd|2:1|957|2
+9580-9589|AION Bank|1:1|958|1
+9590-9599|EP Bank AB|1:2|959|1
+9600-9606|Banking Circle SE|2:4|960|4
+9630-9639|Lån & Spar Bank A/S, filial|1:1|963|1
+9640-9649|NOBA Bank|1:2|964|1
+9660-9669|Svea Bank|1:2|966|1
+9670-9679|JAK Medlemsbank|1:2|967|1
+9680-9689|Enity Bank Group (Bluestep)|1:1|968|1
+9700-9709|Ekobanken|1:2|970|1
+9710-9719|Lunar Bank|1:2|971|1
+9750-9759|Northmill Bank|1:2|975|1
+9780-9789|Klarna Bank|1:2|978|1
+9960-9969|Nordea (Plusgirot)|2:3|950|3
