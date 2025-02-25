@@ -141,11 +141,17 @@ public static partial class DocumentExtractor
             if ((tagStart = docPtr.IndexOf("</body>", strcmp)) != -1)
                 docPtr = docPtr[..(tagStart + "</body>".Length)];
 
-            var ddata = new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}");
+            var datasets = new List<(string, BinaryData)>
+            {
+                (Path.GetFileNameWithoutExtension(doc.LocalName) + ".cmp.html",
+                new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}"))
+            };
             // can not keep spans during yields or awaits, so yield later
 
-            var localName = Path.GetFileNameWithoutExtension(doc.LocalName) + ".cmp.html";
-            yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+            foreach (var (localName, ddata) in datasets)
+            {
+                yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+            }
         }
     }
 
