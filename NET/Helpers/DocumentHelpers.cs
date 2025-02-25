@@ -82,4 +82,20 @@ public static class DocumentHelpers
         }
         return list;
     }
+
+    public static DirectoryInfo GetDataDir()
+    {
+        var ncruncProj = Environment.GetEnvironmentVariable("NCrunch.OriginalProjectPath");
+        var ncruncProjDi = ncruncProj is null ? null : new FileInfo(ncruncProj).Directory;
+        var di = ncruncProjDi ?? new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (true)
+        {
+            var diData = di.EnumerateDirectories("Data").FirstOrDefault();
+            if (diData is not null)
+            {
+                return diData;
+            }
+            di = di.Parent ?? throw new Exception("Data spath not found");
+        }
+    }
 }

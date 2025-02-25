@@ -4,17 +4,7 @@ using Bankinfrastruktur.Helpers;
 Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("sv-SE");
 
 var diDocCache = Directory.CreateDirectory(".doc_cache");
-var diData = new DirectoryInfo(Directory.GetCurrentDirectory());
-while (true)
-{
-    var di = diData.EnumerateDirectories("Data").FirstOrDefault();
-    if (di is not null)
-    {
-        diData = di;
-        break;
-    }
-    diData = diData.Parent ?? throw new Exception("Data spath not found");
-}
+var diData = DocumentHelpers.GetDataDir();
 Console.WriteLine($"Working with {diDocCache.FullName} and {diData.FullName} ...");
 var ghStepSummaryFile = Environment.GetEnvironmentVariable("GITHUB_STEP_SUMMARY");
 
