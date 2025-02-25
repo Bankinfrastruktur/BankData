@@ -65,7 +65,8 @@ public static class DocumentHelpers
             if (hrefStart == -1)
                 continue;
             if (!aPtr.Contains(".pdf", strcmp) &&
-                !aPtr.Contains(".docx", strcmp)) continue;
+                !aPtr.Contains(".docx", strcmp) &&
+                !aPtr.Contains(".xlsx", strcmp)) continue;
 
             var hrefPtr = aPtr[(hrefStart + hrefValue.Length)..];
             if (hrefPtr[0] == '"')

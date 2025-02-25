@@ -112,6 +112,41 @@ public static partial class DocumentExtractor
                 yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
             }
         }
+        // PDFs handled by python parser
+        else if (doc.ArchiveMetadata?.Mimetype == "text/html")
+        {
+            var docPtr = RegexWidthAttribute().Replace(doc.Data.ToString(), "")
+                .Replace("\r\n", "\n")
+                .Replace("\n\n", "\n")
+                .Replace("<tr>\n", "<tr>")
+                .Replace("<td>\n", "<td>")
+                .Replace("</td>\n", "</td>")
+                .Replace("</p>\n</td>", "</p></td>")
+                .AsSpan();
+            const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+            int tagStart;
+            if ((tagStart = docPtr.IndexOf("<main", strcmp)) != -1)
+                docPtr = docPtr[tagStart..];
+            if ((tagStart = docPtr.IndexOf("<article class=\"Article\">\n    <h1 class=\"Article-heading\">", strcmp)) != -1)
+                docPtr = docPtr[tagStart..];
+            if ((tagStart = docPtr.IndexOf("</header>", strcmp)) != -1)
+                docPtr = docPtr[(tagStart + "</header>".Length)..];
+            if ((tagStart = docPtr.IndexOf("<footer", strcmp)) != -1)
+                docPtr = docPtr[..tagStart];
+            if ((tagStart = docPtr.IndexOf("<div class=\"Socialmedia\">", strcmp)) != -1)
+                docPtr = docPtr[..tagStart];
+            // some fallbacks to limit scope
+            if ((tagStart = docPtr.IndexOf("<body", strcmp)) != -1)
+                docPtr = docPtr[tagStart..];
+            if ((tagStart = docPtr.IndexOf("</body>", strcmp)) != -1)
+                docPtr = docPtr[..(tagStart + "</body>".Length)];
+
+            var ddata = new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}");
+            // can not keep spans during yields or awaits, so yield later
+
+            var localName = Path.GetFileNameWithoutExtension(doc.LocalName) + ".cmp.html";
+            yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+        }
     }
 
     /// <summary>Modify parts of data that changes on each request to check for actual data changes</summary>
@@ -129,6 +164,9 @@ public static partial class DocumentExtractor
     }
 
     // nonce="DuWld9YQzgA3bRBy/oCVWgk9rQ4MEmOk5Ya2T9RttMs="
-    [System.Text.RegularExpressions.GeneratedRegex(" nonce=\"([^\"]{1,64})\"")]
+    [System.Text.RegularExpressions.GeneratedRegex(" nonce=\"([^\"]{1,64})\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
     private static partial System.Text.RegularExpressions.Regex RegexNonceAttribute();
+
+    [System.Text.RegularExpressions.GeneratedRegex(" width=\"[0-9pxem]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex RegexWidthAttribute();
 }
