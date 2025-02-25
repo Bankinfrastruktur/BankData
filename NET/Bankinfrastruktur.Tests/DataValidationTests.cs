@@ -215,7 +215,6 @@ public class DataValidationTests
         {
             Assert.That(clearing, Has.Length.EqualTo(9), l);
             Assert.That(sibanId, Has.Length.EqualTo(3), l);
-            Assert.That(bic, Has.Length.EqualTo(8), l);
             Assert.That(method, Has.Length.AnyOf(0, 1), l);
             Assert.That(clearing[4], Is.EqualTo('-'), l);
         });
@@ -230,19 +229,33 @@ public class DataValidationTests
 
     private static IEnumerable<string> ParseIbanBicText(string data)
     {
-        var ibanIdBic = new Dictionary<int, string>();
+        var ibanIdBic = Bankinfrastruktur.Helpers.DocumentHelpers.IbanIdToBicMap();
+        var usedIbanIds = new HashSet<int>();
         foreach (var s in Helpers.GetLines(data).SelectMany(ParseIbanBicLine))
         {
             var ibanId = Convert.ToInt32(s[2]);
+            usedIbanIds.Add(ibanId);
             if (ibanIdBic.TryGetValue(ibanId, out var existingBic))
+            {
+                if (string.IsNullOrEmpty(s[3]))
+                {
+                    s[3] = existingBic;
+                }
                 Assert.That(s[3], Is.EqualTo(existingBic));
-            ibanIdBic[ibanId] = s[3];
+            }
+            else if (!string.IsNullOrEmpty(s[3]))
+            {
+                ibanIdBic[ibanId] = s[3];
+            }
+            Assert.That(s[3], Has.Length.EqualTo(8), message: string.Join(", ", s));
             yield return string.Join("|", s[0], s[1], s[2], s[3], s[4], "Method" + s[5]);
         }
-        // Dictionary to help with IbanID and BIC in full set
-        Console.WriteLine($"var {nameof(ibanIdBic)} = new Dictionary<int, string>() {{");
-        foreach (var kvp in ibanIdBic.OrderBy(kvp => kvp.Key))
-            Console.WriteLine($"{{{kvp.Key}, \"{kvp.Value}\"}},");
-        Console.WriteLine($"}};");
+
+        var unusedIbanIdsInBicMap = ibanIdBic.Keys.Except(usedIbanIds).ToList();
+        if (unusedIbanIdsInBicMap.Count != 0)
+        {
+            Console.WriteLine($"Unused IbanIds in BIC map: {string.Join(", ", unusedIbanIdsInBicMap)}");
+        }
+        Bankinfrastruktur.Helpers.DocumentHelpers.SaveIbanToBicMap(ibanIdBic);
     }
 }

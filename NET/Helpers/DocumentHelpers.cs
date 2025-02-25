@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Bankinfrastruktur.Helpers;
 
@@ -98,4 +99,34 @@ public static class DocumentHelpers
             di = di.Parent ?? throw new Exception("Data spath not found");
         }
     }
+
+    private static FileInfo? _fileIbanIdToBicMap;
+    private static FileInfo FileIbanIdToBicMap => _fileIbanIdToBicMap ??= new(Path.Combine(GetDataDir().FullName, "IbanIdToBicMap.txt"));
+    private static Dictionary<int, string>? _ibanIdToBicMap = null;
+    public static Dictionary<int, string> IbanIdToBicMap()
+    {
+        var ibanIdBic = _ibanIdToBicMap;
+        if (ibanIdBic is not null)
+        {
+            return ibanIdBic;
+        }
+        ibanIdBic = [];
+        var fi = FileIbanIdToBicMap;
+        var data = fi.Exists ? File.ReadAllText(fi.FullName, Encoding.UTF8) : "";
+        foreach (var l in data.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var s = l.Split('|');
+            if (s.Length != 2) throw new Exception($"Unexpected length {s.Length} from {l}");
+            if (s[0].Length != 3) throw new Exception($"Unexpected ibanid {s[0]} from {l}");
+            ibanIdBic.Add(Convert.ToInt32(s[0]), s[1]);
+        }
+
+        _ibanIdToBicMap = ibanIdBic;
+        return ibanIdBic;
+    }
+
+    public static void SaveIbanToBicMap(Dictionary<int, string> map)
+        => File.WriteAllText(
+            FileIbanIdToBicMap.FullName,
+            string.Join("", map.OrderBy(kvp => kvp.Key).Select(kvp => $"{kvp.Key}|{kvp.Value}\n")));
 }
