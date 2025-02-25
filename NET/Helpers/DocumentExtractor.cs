@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -147,6 +148,51 @@ public static partial class DocumentExtractor
                 new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}"))
             };
             // can not keep spans during yields or awaits, so yield later
+
+            var ibanTable = docPtr;
+            while ((tagStart = ibanTable.IndexOf("<h3>")) != -1)
+            {
+                ibanTable = ibanTable[tagStart..];
+                var tagEnd = ibanTable.IndexOf("</h3>");
+                if (tagEnd == -1)
+                    tagEnd = ibanTable.Length;
+                var h3title = ibanTable[4..tagEnd];
+                if (!h3title.ToString().Contains("IBAN ID"))
+                {
+                    ibanTable = ibanTable[tagEnd..];
+                    continue;
+                }
+                while ((tagStart = ibanTable.IndexOf("<table", strcmp)) != -1)
+                {
+                    ibanTable = ibanTable[tagStart..];
+                    tagEnd = ibanTable.IndexOf("</table>", strcmp);
+                    if (tagEnd == -1)
+                        tagEnd = ibanTable.Length;
+                    var tblPtr = ibanTable[..tagEnd];
+                    ibanTable = ibanTable[tagEnd..];
+
+                    // grab a cleanish table
+                    var tbl = tblPtr.ToString()
+                            .Replace("\n", "")
+                            .Replace("<tr", "\n<tr")
+                            .Replace("</p><p>", "")
+                            .Replace("<td><p>", "<td>")
+                            .Replace("</p></td>", "</td>")
+                            .Replace("<strong>", "")
+                            .Replace("</strong>", "");
+                    // convert to known psv format
+                    tbl = tbl[tbl.IndexOf("<tr>")..];
+                    tbl = tbl[..tbl.IndexOf("</tbody>")];
+                    tbl = tbl
+                        .Replace("</td><td>", "|")
+                        .Replace("<tr><td>", "")
+                        .Replace("</td></tr>", "")
+                        .Trim() + "\n";
+                    tbl = WebUtility.HtmlDecode(tbl);
+                    if (tbl.StartsWith("Clearing nr|")) tbl = $"# {tbl}";
+                    datasets.Add(("IbanIdMetod.txt", new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n# {h3title}\n{tbl}")));
+                }
+            }
 
             foreach (var (localName, ddata) in datasets)
             {
