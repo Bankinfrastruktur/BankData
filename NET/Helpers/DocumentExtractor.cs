@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -148,11 +149,73 @@ public static partial class DocumentExtractor
             };
             // can not keep spans during yields or awaits, so yield later
 
+            datasets.AddRange(ExtractIbanIdMetod(doc, docPtr).Select(d => ("IbanIdMetod.txt", d)));
+
             foreach (var (localName, ddata) in datasets)
             {
                 yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
             }
         }
+    }
+
+    private static BinaryData[] ExtractIbanIdMetod(UpdateChecker.GrabAndDownload.Document doc, ReadOnlySpan<char> ibanTable)
+    {
+        const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+        int tagStart;
+        while ((tagStart = ibanTable.IndexOf("<h3>", strcmp)) != -1)
+        {
+            ibanTable = ibanTable[tagStart..];
+            var tagEnd = ibanTable.IndexOf("</h3>", strcmp);
+            if (tagEnd == -1)
+                tagEnd = ibanTable.Length;
+            var h3title = ibanTable[4..tagEnd];
+            if (!h3title.ToString().Contains("IBAN ID"))
+            {
+                ibanTable = ibanTable[tagEnd..];
+                continue;
+            }
+            var tbl = ExtractTable(ref ibanTable);
+            if (tbl is null) continue;
+            if (tbl.StartsWith("Clearing nr|")) tbl = $"# {tbl}";
+            return [new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n# {h3title}\n{tbl}")];
+        }
+
+        return [];
+    }
+
+    private static string? ExtractTable(ref ReadOnlySpan<char> tablePtr)
+    {
+        const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+        int tagStart;
+        while ((tagStart = tablePtr.IndexOf("<table", strcmp)) != -1)
+        {
+            tablePtr = tablePtr[tagStart..];
+            var tagEnd = tablePtr.IndexOf("</table>", strcmp);
+            if (tagEnd == -1)
+                tagEnd = tablePtr.Length;
+            var tblOnlyPtr = tablePtr[..tagEnd];
+            tablePtr = tablePtr[tagEnd..];
+
+            // grab a cleanish table
+            var tbl = tblOnlyPtr.ToString()
+                    .Replace("\n", "")
+                    .Replace("<tr", "\n<tr")
+                    .Replace("</p><p>", "")
+                    .Replace("<td><p>", "<td>")
+                    .Replace("</p></td>", "</td>")
+                    .Replace("<strong>", "")
+                    .Replace("</strong>", "");
+            // convert to known psv format
+            tbl = tbl[tbl.IndexOf("<tr>")..];
+            tbl = tbl[..tbl.IndexOf("</tbody>")];
+            tbl = tbl
+                .Replace("</td><td>", "|")
+                .Replace("<tr><td>", "")
+                .Replace("</td></tr>", "")
+                .Trim() + "\n";
+            return WebUtility.HtmlDecode(tbl);
+        }
+        return null;
     }
 
     /// <summary>Modify parts of data that changes on each request to check for actual data changes</summary>
