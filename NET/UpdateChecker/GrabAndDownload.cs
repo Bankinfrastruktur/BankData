@@ -8,6 +8,7 @@ public static class GrabAndDownload
         => Task.WhenAll(
             GetPage(new Uri("https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/iban-och-svenskt-nationellt-kontonummer"), true, "bankinfrastruktur_iban-och-svenskt-nationellt-kontonummer.html"),
             GetPage(new Uri("https://www.bankinfrastruktur.se/framtidens-betalningsinfrastruktur/konto-och-clearingnummer"), false, "bankinfrastruktur_konto-och-clearingnummer.html"),
+            GetPage(new Uri("https://www.riksbank.se/sv/betalningar--kontanter/betalningssystemet-rix/delta-i-rix/deltagare-i-rix/"), false, "deltagare-i-rix.html"),
             GetPage(new Uri("https://www.swedishbankers.se/fraagor-vi-arbetar-med/finansiell-infrastruktur/dataclearingen/"), false, "swedishbankers_dataclearingen.html"));
 
     public class Document(Uri uri, BinaryData data, string srcSha1, WaybackSnapshot? archiveMetadata, string? localName = null)

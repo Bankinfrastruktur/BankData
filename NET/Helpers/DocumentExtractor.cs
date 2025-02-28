@@ -228,6 +228,10 @@ public static partial class DocumentExtractor
         {
             data = RegexNonceAttribute().Replace(data, "");
         }
+        if (data.Contains("window.NREUM"))
+        {
+            data = RegexScriptNreum().Replace(data, "");
+        }
         var ddata = new BinaryData(data);
         return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, doc.LocalName);
     }
@@ -238,4 +242,7 @@ public static partial class DocumentExtractor
 
     [System.Text.RegularExpressions.GeneratedRegex(" width=\"[0-9pxem]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
     private static partial System.Text.RegularExpressions.Regex RegexWidthAttribute();
+
+    [System.Text.RegularExpressions.GeneratedRegex("<script type=\"text/javascript\">\\.{0,10}window\\.NREUM.*?</script>")]
+    private static partial System.Text.RegularExpressions.Regex RegexScriptNreum();
 }
