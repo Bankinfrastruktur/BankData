@@ -44,13 +44,13 @@ public static class DocumentHelpers
     }
 
     public static IList<Uri> GetDocumentUrisFromPage(BinaryData docData, Uri page) =>
-        [.. GetDocumentUris(docData.ToString()).Select(t => new Uri(page, t))];
+        GetDocumentUris(docData.ToString().Replace('\t', ' '), page);
 
-    public static IList<string> GetDocumentUris(ReadOnlySpan<char> html)
+    public static IList<Uri> GetDocumentUris(ReadOnlySpan<char> html, Uri page)
     {
         const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
         ReadOnlySpan<char> hrefValue = " href=";
-        var list = new List<string>();
+        var list = new HashSet<string>();
         var htmlPtr = html;
         int aStart;
         while ((aStart = htmlPtr.IndexOf("<a ", strcmp)) != -1)
@@ -65,10 +65,6 @@ public static class DocumentHelpers
             var hrefStart = aPtr.IndexOf(hrefValue, strcmp);
             if (hrefStart == -1)
                 continue;
-            if (!aPtr.Contains(".pdf", strcmp) &&
-                !aPtr.Contains(".docx", strcmp) &&
-                !aPtr.Contains(".xlsx", strcmp)) continue;
-
             var hrefPtr = aPtr[(hrefStart + hrefValue.Length)..];
             if (hrefPtr[0] == '"')
             {
@@ -79,9 +75,12 @@ public static class DocumentHelpers
                 }
             }
 
+            if (!hrefPtr.Contains(".pdf", strcmp) &&
+                !hrefPtr.Contains(".docx", strcmp) &&
+                !hrefPtr.Contains(".xlsx", strcmp)) continue;
             list.Add(hrefPtr.ToString());
         }
-        return list;
+        return [.. list.Select(u => new Uri(page, u))];
     }
 
     public static DirectoryInfo GetDataDir()
