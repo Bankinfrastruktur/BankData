@@ -31,7 +31,7 @@ jobs:
           echo "Version $version" >> "$GITHUB_STEP_SUMMARY"
           echo "version=$version" >> "$GITHUB_ENV"
           echo "buildopts=--configuration $Config --no-restore -p:RepositoryCommit=$GITHUB_SHA -p:Version=$version" >> "$GITHUB_ENV"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
