@@ -33,7 +33,7 @@ jobs:
           echo "buildopts=--configuration $Config --no-restore -p:RepositoryCommit=$GITHUB_SHA -p:Version=$version" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
                 8.0.x
