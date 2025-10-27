@@ -106,7 +106,7 @@ jobs:
         if:   steps.data-changes.outputs.staged == 'true'
         run:  git push origin HEAD:refs/heads/UpdateCheckerDiscovery -f
       - name: doc artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: docs-from-cache
           path: .doc_cache
