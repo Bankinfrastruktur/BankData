@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
@@ -141,12 +142,166 @@ public static partial class DocumentExtractor
             if ((tagStart = docPtr.IndexOf("</body>", strcmp)) != -1)
                 docPtr = docPtr[..(tagStart + "</body>".Length)];
 
-            var ddata = new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}");
+            var datasets = new List<(string, BinaryData)>
+            {
+                (Path.GetFileNameWithoutExtension(doc.LocalName) + ".cmp.html",
+                new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{docPtr.ToString()}"))
+            };
             // can not keep spans during yields or awaits, so yield later
 
-            var localName = Path.GetFileNameWithoutExtension(doc.LocalName) + ".cmp.html";
-            yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+            datasets.AddRange(ExtractIbanIdMetod(doc, docPtr).Select(d => ("IbanIdMetod.txt", d)));
+            datasets.AddRange(ExtractRixDeltagare(doc, docPtr).Select(d => ("RixDeltagare.txt", d)));
+
+            foreach (var (localName, ddata) in datasets)
+            {
+                yield return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, localName);
+            }
         }
+    }
+
+    private static BinaryData[] ExtractIbanIdMetod(UpdateChecker.GrabAndDownload.Document doc, ReadOnlySpan<char> ibanTable)
+    {
+        const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+        int tagStart;
+        while ((tagStart = ibanTable.IndexOf("<h3>", strcmp)) != -1)
+        {
+            ibanTable = ibanTable[tagStart..];
+            var tagEnd = ibanTable.IndexOf("</h3>", strcmp);
+            if (tagEnd == -1)
+                tagEnd = ibanTable.Length;
+            var h3title = ibanTable[4..tagEnd];
+            if (!h3title.ToString().Contains("IBAN ID"))
+            {
+                ibanTable = ibanTable[tagEnd..];
+                continue;
+            }
+            var tbl = ExtractTable(ref ibanTable);
+            if (tbl is null) continue;
+            if (tbl.StartsWith("Clearing nr|")) tbl = $"# {tbl}";
+            return [new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n# {h3title}\n{tbl}")];
+        }
+
+        return [];
+    }
+
+    private static BinaryData[] ExtractRixDeltagare(UpdateChecker.GrabAndDownload.Document doc, ReadOnlySpan<char> captionPtr)
+    {
+        const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+        int tagStart;
+        var tag = "<caption>";
+        while ((tagStart = captionPtr.IndexOf(tag, strcmp)) != -1)
+        {
+            var prePtr = captionPtr;
+            captionPtr = captionPtr[(tagStart + tag.Length)..];
+            var tagEnd = captionPtr.IndexOf("</caption>", strcmp);
+            if (tagEnd == -1)
+                tagEnd = captionPtr.Length;
+            var caption = captionPtr[..tagEnd].ToString();
+            captionPtr = captionPtr[tagEnd..];
+            var idx = prePtr[..tagStart].LastIndexOf("<table ", strcmp);
+            if (caption == "RIX-deltagare" && idx != -1 && idx < tagStart)
+            {
+                var tablePtr = prePtr[idx..];
+                var tbl = ExtractTable(ref tablePtr);
+                var sb = new StringBuilder();
+                sb.Append($"# {caption}\n");
+                string[] headers = [];
+                var bankLines = new List<string[]>();
+                foreach (var l in tbl?.Trim().Split('\n') ?? [])
+                {
+                    if (l.StartsWith("scope=\"col\">"))
+                    {
+                        headers = l.Replace("scope=\"col\">", "url|").Trim().Split('|');
+                        sb.Append("# ").Append(string.Join("|", headers)).Append('\n');
+                        continue;
+                    }
+                    var xl = RegexTitleAttribute().Replace(l, "")
+                        .Replace("scope=\"row\"><a href=\"", "")
+                        .Replace("\" target=\"_blank\" rel=\"noopener\">", "|")
+                        .Trim();
+                    if (xl.StartsWith("/sv/\" target"))
+                    {
+                        xl = xl.Replace("/sv/\" target=\"_top\">", $"{doc.Url.GetLeftPart(UriPartial.Authority)}/sv/|");
+                    }
+                    var fields = xl.Split('|');
+                    if (fields.Length != headers.Length)
+                    {
+                        throw new Exception($"Unexpected filed count {fields.Length} expected {headers.Length} on {l} -> {xl}");
+                    }
+                    // Replace simple X marks in field with simplified header value
+                    // skip over url, name, clearing before checking for Xs
+                    for (int i = 3; i < fields.Length; i++)
+                    {
+                        var fv = fields[i];
+                        if (fv == "X")
+                        {
+                            fields[i] = headers[i] switch
+                            {
+                                string a when a.EndsWith("RIX-RTGS") => "RIX-RTGS",
+                                string a when a.EndsWith("RIX-INST (SIP)") => "RIX-INST SIP",
+                                string a when a.EndsWith("RIX-INST (Standardmodellen)") => "RIX-INST STD",
+                                _ => headers[i],
+                            };
+                        }
+                        else if (fv == "-")
+                        {
+                            fields[i] = "";
+                        }
+                        else
+                        {
+                            throw new Exception($"Unexpected value {fv} in column {i} from {l} -> {xl}");
+                        }
+                    }
+                    bankLines.Add(fields);
+                }
+                foreach (var bl in bankLines.OrderBy(l => l[2]))
+                {
+                    sb.Append(string.Join("|", bl)).Append('\n');
+                }
+                return [new BinaryData($"# {doc.ArchiveMetadata?.ShowUrl ?? doc.UrlPreferArchive}\n{sb}")];
+            }
+        }
+
+        return [];
+    }
+
+    private static string? ExtractTable(ref ReadOnlySpan<char> tablePtr)
+    {
+        const StringComparison strcmp = StringComparison.OrdinalIgnoreCase;
+        int tagStart;
+        while ((tagStart = tablePtr.IndexOf("<table", strcmp)) != -1)
+        {
+            tablePtr = tablePtr[tagStart..];
+            var tagEnd = tablePtr.IndexOf("</table>", strcmp);
+            if (tagEnd == -1)
+                tagEnd = tablePtr.Length;
+            var tblOnlyPtr = tablePtr[..tagEnd];
+            tablePtr = tablePtr[tagEnd..];
+
+            // grab a cleanish table
+            var tbl = RegexStyleAttribute().Replace(tblOnlyPtr.ToString(), "")
+                    .Replace("\n", "")
+                    .Replace("<tr", "\n<tr")
+                    .Replace("</p><p>", "")
+                    .Replace("<td><p>", "<td>")
+                    .Replace("</p></td>", "</td>")
+                    .Replace("<strong>", "")
+                    .Replace("</strong>", "");
+            // convert to known psv format
+            tbl = tbl[tbl.IndexOf("<tr")..];
+            tbl = tbl[..tbl.IndexOf("</tbody>")];
+            tbl = tbl
+                .Replace("</td><td>", "|")
+                .Replace("</th><th scope=\"col\">", "|")
+                .Replace("</a></th><td>", "|")
+                .Replace("<tr><td>", "")
+                .Replace("<tr><th ", "")
+                .Replace("</td></tr>", "")
+                .Replace("</th></tr>", "")
+                .Trim() + "\n";
+            return WebUtility.HtmlDecode(tbl);
+        }
+        return null;
     }
 
     /// <summary>Modify parts of data that changes on each request to check for actual data changes</summary>
@@ -159,6 +314,10 @@ public static partial class DocumentExtractor
         {
             data = RegexNonceAttribute().Replace(data, "");
         }
+        if (data.Contains("window.NREUM"))
+        {
+            data = RegexScriptNreum().Replace(data, "");
+        }
         var ddata = new BinaryData(data);
         return new UpdateChecker.GrabAndDownload.Document(doc.Url, ddata, await ddata.GetSha1Base32Async(), doc.ArchiveMetadata, doc.LocalName);
     }
@@ -167,6 +326,15 @@ public static partial class DocumentExtractor
     [System.Text.RegularExpressions.GeneratedRegex(" nonce=\"([^\"]{1,64})\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
     private static partial System.Text.RegularExpressions.Regex RegexNonceAttribute();
 
-    [System.Text.RegularExpressions.GeneratedRegex(" width=\"[0-9pxem]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    [System.Text.RegularExpressions.GeneratedRegex(" width=\"[0-9pxem%]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
     private static partial System.Text.RegularExpressions.Regex RegexWidthAttribute();
+
+    [System.Text.RegularExpressions.GeneratedRegex(" style=\"[^\"]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex RegexStyleAttribute();
+
+    [System.Text.RegularExpressions.GeneratedRegex(" title=\"[^\"]+\"", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex RegexTitleAttribute();
+
+    [System.Text.RegularExpressions.GeneratedRegex("<script type=\"text/javascript\">\\.{0,10}window\\.NREUM.*?</script>")]
+    private static partial System.Text.RegularExpressions.Regex RegexScriptNreum();
 }
