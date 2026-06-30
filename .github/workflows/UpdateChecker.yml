@@ -27,7 +27,7 @@ jobs:
           echo "actionjoburl=$url" >> "$GITHUB_OUTPUT"
           echo "$url" >> "$GITHUB_STEP_SUMMARY"
           echo "date=$(date -u "+%Y-%m-%d")" >> "$GITHUB_OUTPUT"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Cache build
         id: cache-build
         uses: actions/cache@v4
