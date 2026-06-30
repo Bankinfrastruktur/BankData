@@ -64,7 +64,7 @@ jobs:
           bash Data/Tools/update-readme-with-konto.sh
           git add README.md
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         id: setuppy
         with:
           python-version: '3.x'
