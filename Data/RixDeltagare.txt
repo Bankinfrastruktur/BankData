@@ -1,0 +1,48 @@
+# https://web.archive.org/web/20250301212028/https://www.riksbank.se/sv/betalningar--kontanter/betalningssystemet-rix/delta-i-rix/deltagare-i-rix/
+# RIX-deltagare
+# url|Deltagare|Clearing nr.|Certifierad för RIX-RTGS|Certifierad för RIX-INST (SIP)|Certifierad för RIX-INST (Standardmodellen)
+https://www.riksbank.se/sv/|Riksbanken|1000|RIX-RTGS||
+https://www.euroccp.com/|Cboe Clear Europe|1060|RIX-RTGS||
+https://www.cls-group.com/|CLS Bank International|1099|RIX-RTGS||
+https://danskebank.se/privat|Danske Bank A/S|1200|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.carnegie.se/|Carnegie Investment Bank AB|2100|RIX-RTGS||
+https://www.alandsbanken.se/|Ålandsbanken Abp|2300|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.nordea.se/|Nordea Bank Abp|3000|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://seb.se/|Skandinaviska Enskilda Banken AB|5000|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.handelsbanken.se/sv/|Svenska Handelsbanken AB|6000|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.swedbank.se/|Swedbank AB|8000|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.lansforsakringar.se/stockholm/privat/|Länsförsäkringar Bank AB|9020|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.citibank.co.uk/personal/home.do|Citibank Europe plc|9040|RIX-RTGS||
+https://www.multitudebank.com/|Multitude Bank p.l.c|9070|RIX-RTGS||
+https://www.credit-agricole.fr/|Crédit Agricole Corporate and Investment Bank S.A.|9080|RIX-RTGS||
+https://www.nordnet.se/se/marknad/aktier|Nordnet Bank AB|9100|RIX-RTGS||
+https://www.skandia.se/|Skandiabanken AB|9150|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.dnb.se/se/sv|DnB Bank ASA|9190|RIX-RTGS||
+https://www.marginalen.se/privat/?utm_source=google&utm_medium=cpc&utm_term=+marginalen%20+bank&utm_content=359662033&utm_campaign=71001799&gclid=CILzqfP-ms8CFcHVcgodmi4J3A|Marginalen bank AB|9230|RIX-RTGS|RIX-INST SIP|
+https://www.sbab.se/|SBAB Bank AB|9250|RIX-RTGS||
+http://www.resursbank.se/|Resurs Bank AB|9280|RIX-RTGS||
+https://www.landshypotek.se/|Landshypotek Bank AB|9390|RIX-RTGS||
+https://www.santanderconsumer.se/|Santander Consumer Bank AS|9460|RIX-RTGS||
+https://www.educatedtrading.bnpparibas.se/SWE/hem|BNP Paribas S.A.|9470|RIX-RTGS||
+https://www.avanza.se/start|Avanza Bank AB|9550|RIX-RTGS||
+https://www.sparbankensyd.se/|Sparbanken Syd|9570|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://aion.eu/en/|Aion Bank S.A.|9580|RIX-RTGS||
+https://www.penser.se/|EP Bank AB|9590|RIX-RTGS||
+https://www.bankingcircle.com/|Banking Circle|9600|RIX-RTGS||RIX-INST STD
+http://www.lsb.se|Lån & Spar Bank A/S|9630|RIX-RTGS||
+https://www.nordaxgroup.com/|NOBA Bank Group AB (publ)|9640|RIX-RTGS||
+https://www.svea.com/se/sv/start/|Svea Bank AB|9660|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.jak.se/|JAK Medlemsbank|9670|RIX-RTGS||
+https://www.bluestep.se/|Enity Bank Group AB|9680|RIX-RTGS||
+https://www.ekobanken.se/|Ekobanken|9700|RIX-RTGS||
+https://www.lunar.app/se/privat|Lunar Bank A/S|9710|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.northmill.com/se/|Northmill Bank AB|9750|RIX-RTGS|RIX-INST SIP|RIX-INST STD
+https://www.klarna.com/se/|Klarna Bank AB|9780|RIX-RTGS|RIX-INST SIP|
+https://www.nasdaq.com/|Nasdaq Clearing AB|9870 |RIX-RTGS||
+https://www.riksgalden.se/|Riksgälden|9890|RIX-RTGS||
+https://www.bankgirot.se/|Bankgirocentralen BGC AB|9900|RIX-RTGS||
+https://www.euroclear.com/sweden/sv.html|Euroclear Sweden AB|9910 |RIX-RTGS||
+http://kommuninvest.se/|Kommuninvest i Sverige AB|9955|RIX-RTGS||
+https://www.vp.dk/|VP Securities A/S|9956|RIX-RTGS||
+https://www.lch.com/|LCH Limited|9957|RIX-RTGS||
+https://www.northerntrust.com/europe/home|Northern Trust Global Services SE|9958|RIX-RTGS||
